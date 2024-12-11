@@ -1,21 +1,5 @@
 <template>
   <q-layout view="hHh lpR fFf">
-    <!-- Header -->
-    <q-header elevated class="bg-primary text-white">
-      <q-toolbar>
-        <q-toolbar-title>
-          My App
-        </q-toolbar-title>
-      </q-toolbar>
-    </q-header>
-
-    <!-- Main Content -->
-    <q-page-container>
-      <q-page class="q-pa-md">
-        <!-- Your Page Content Here -->
-        <p>Welcome to the page content!</p>
-      </q-page>
-    </q-page-container>
 
     <!-- Footer -->
     <q-footer class="footer bg-gradient" elevated>
