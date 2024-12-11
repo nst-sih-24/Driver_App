@@ -1,417 +1,319 @@
 <template>
   <q-layout view="lHh Lpr lFf">
-    <q-page-container>
-      <!-- App header with login button -->
-      <q-header elevated>
-        <q-toolbar>
-          <q-toolbar-title>
-            <span class="q-mr-md">Feedback App</span>
-          </q-toolbar-title>
-          <q-btn v-if="!userLoggedIn" flat label="Login" @click="loginDialog = true" />
-          <q-btn v-if="userLoggedIn" flat label="Logout" @click="logout" />
-        </q-toolbar>
-      </q-header>
-
-      <!-- Feedback page container -->
-      <q-page class="q-pa-md">
-        <q-card class="my-card q-mb-md shadow-4" style="max-width: 800px; margin: auto; border-radius: 16px;">
-          <q-card-section class="q-pa-none">
-            <div class="text-h4 text-center q-mb-md" :class="titleClass">
-              We Value Your Feedback
+    <q-header elevated class="navbar">
+      <div class="container">
+        <div class="navbar-content">
+          <div class="logo">
+            <div class="logo-icon">
+              <!-- Updated Bus Icon with a better style -->
+              <q-icon name="directions_bus" size="32px" class="bus-icon" />
             </div>
-            <div class="text-body2 text-center q-mb-md text-muted">
-              Share your thoughts with us so we can improve and serve you better.
-            </div>
-          </q-card-section>
+            <span class="logo-title">Driver Portal</span>
+          </div>
 
-          <q-form @submit="submitFeedback" ref="form" class="q-px-md q-pb-md">
-            <!-- Name Input -->
-            <q-input
-              filled
-              v-model="name"
-              label="Your Name"
-              autofocus
-              :rules="[val => val && val.length > 0 || 'Name is required']"
-              class="q-mb-md"
-              dense
-              :class="inputClass"
-            />
+          <div class="right-side">
+            <!-- Notification button using Quasar component -->
+            <q-btn round icon="notifications" @click="toggleNotifications" flat>
+              <q-badge floating color="red" label="" v-if="hasUnreadNotifications" />
+            </q-btn>
 
-            <!-- Email Input -->
-            <q-input
-              filled
-              v-model="email"
-              label="Your Email"
-              :rules="[val => val && /.+@.+\..+/.test(val) || 'Please enter a valid email']"
-              class="q-mb-md"
-              dense
-              :class="inputClass"
-            />
+            <div class="profile-dropdown">
+              <div class="profile-info">
+                <p class="profile-name">XYZABC</p>
+                <p class="profile-id">Driver #4872</p>
+              </div>
 
-            <!-- Feedback Textarea -->
-            <q-input
-              filled
-              v-model="feedback"
-              label="Your Feedback"
-              type="textarea"
-              :rules="[val => val && val.length > 10 || 'Feedback must be at least 10 characters long']"
-              class="q-mb-md"
-              rows="4"
-              :class="inputClass"
-            />
-
-            <!-- Rating -->
-            <div class="q-mb-md">
-              <div class="text-subtitle2">Rate Us</div>
-              <q-btn-group spread>
-                <q-btn
-                  v-for="i in 5"
-                  :key="i"
-                  :icon="i <= rating ? 'star' : 'star_border'"
-                  @click="setRating(i)"
-                  class="q-btn--round q-btn--flat"
-                  color="yellow-8"
+              <!-- Profile avatar using Quasar component -->
+              <q-avatar size="40px" class="cursor-pointer" @click="toggleProfileMenu">
+                <img
+                  src="https://images.unsplash.com/photo-1633332755192-727a05c4013d?w=400"
+                  alt="Driver profile"
                 />
-              </q-btn-group>
+              </q-avatar>
+
+              <!-- Profile menu using Quasar components -->
+              <q-menu v-model="isProfileMenuOpen" cover auto-close>
+                <q-list>
+                  <q-item>
+                    <q-item-section>
+                      <p class="q-mb-xs"><strong>XYZABC</strong></p>
+                      <p class="text-h6">Driver #4872</p>
+                    </q-item-section>
+                  </q-item>
+                  <q-item clickable @click="logout">
+                    <q-item-section>
+                      <q-btn flat label="Log Out" color="negative" />
+                    </q-item-section>
+                  </q-item>
+                </q-list>
+              </q-menu>
             </div>
+          </div>
+        </div>
+      </div>
+    </q-header>
 
-            <!-- Submit Button -->
-            <q-btn
-              label="Submit Feedback"
-              color="primary"
-              type="submit"
-              :disable="loading || !isValid"
-              class="full-width q-mt-md"
-              :loading="loading"
-              loading-color="white"
-              :class="btnClass"
-            />
+    <!-- Side menu using Quasar component -->
+    <q-drawer v-model="isMenuOpen" side="left" overlay bordered>
+      <q-list>
+        <q-item clickable @click="goHome">
+          <q-item-section>Home</q-item-section>
+        </q-item>
+        <q-item clickable @click="goProfile">
+          <q-item-section>Profile</q-item-section>
+        </q-item>
+        <q-item clickable @click="toggleNotifications">
+          <q-item-section>Notifications</q-item-section>
+        </q-item>
+      </q-list>
+    </q-drawer>
 
-            <!-- Loading Spinner -->
-            <q-spinner-bubbles v-if="loading" color="primary" size="30px" class="q-mt-md" />
-          </q-form>
-        </q-card>
-
-        <!-- Success or Error Message -->
-        <q-dialog v-model="showSuccess">
-          <q-card class="bg-teal-3 text-white shadow-6 rounded-lg">
-            <q-card-section class="q-pt-none">
-              <div class="text-h6 q-mb-xs">Thank You!</div>
-              <div>Your feedback has been submitted successfully.</div>
-            </q-card-section>
-            <q-card-actions>
-              <q-btn label="Close" color="white" @click="showSuccess = false" />
-            </q-card-actions>
-          </q-card>
-        </q-dialog>
-
-        <q-dialog v-model="showError">
-          <q-card class="bg-red-4 text-white shadow-6 rounded-lg">
-            <q-card-section class="q-pt-none">
-              <div class="text-h6 q-mb-xs">Oops!</div>
-              <div>Something went wrong. Please try again later.</div>
-            </q-card-section>
-            <q-card-actions>
-              <q-btn label="Close" color="white" @click="showError = false" />
-            </q-card-actions>
-          </q-card>
-        </q-dialog>
-
-        <!-- Login Dialog -->
-        <q-dialog v-model="loginDialog">
-          <q-card>
-            <q-card-section>
-              <div class="text-h6">Login</div>
-              <q-input filled v-model="loginEmail" label="Email" />
-              <q-input filled v-model="loginPassword" label="Password" type="password" />
-            </q-card-section>
-            <q-card-actions>
-              <q-btn flat label="Cancel" @click="loginDialog = false" />
-              <q-btn flat label="Login" color="primary" @click="loginUser" />
-            </q-card-actions>
-          </q-card>
-        </q-dialog>
-      </q-page>
+    <q-page-container>
+      <router-view />
     </q-page-container>
   </q-layout>
 </template>
 
-<script>
-export default {
-  name: "FeedbackPage",
-  data() {
-    return {
-      name: "",
-      email: "",
-      feedback: "",
-      loading: false,
-      showSuccess: false,
-      showError: false,
-      rating: 0,
-      titleClass: "text-primary",
-      inputClass: "custom-input",
-      btnClass: "custom-btn",
-      userLoggedIn: false,
-      loginDialog: false,
-      loginEmail: "",
-      loginPassword: "",
-    };
-  },
-  computed: {
-    isValid() {
-      return (
-        this.name.length > 0 &&
-        this.email.length > 0 &&
-        this.feedback.length > 10 &&
-        this.rating > 0
-      );
-    },
-  },
-  methods: {
-    setRating(value) {
-      this.rating = value;
-    },
-    async submitFeedback() {
-      if (!this.$refs.form.validate()) {
-        return;
-      }
+<script setup>
+import { ref } from 'vue';
 
-      this.loading = true;
+const hasUnreadNotifications = ref(true);
+const isProfileMenuOpen = ref(false);
+const isMenuOpen = ref(false);
 
-      try {
-        const isSuccess = Math.random() > 0.5;
-        await new Promise((resolve, reject) =>
-          setTimeout(isSuccess ? resolve : reject, 2000)
-        );
+const toggleNotifications = () => {
+  hasUnreadNotifications.value = !hasUnreadNotifications.value;
+  if (hasUnreadNotifications.value) {
+    alert('You have new notifications!');
+  } else {
+    alert('All notifications are read.');
+  }
+};
 
-        if (isSuccess) {
-          this.showSuccess = true;
-        } else {
-          throw new Error("Failed to submit feedback");
-        }
-      } finally {
-        this.loading = false;
-      }
-    },
-    loginUser() {
-      // Simulate user login
-      if (this.loginEmail && this.loginPassword) {
-        this.userLoggedIn = true;
-        this.loginDialog = false;
-        this.$q.notify({
-          message: 'Login successful!',
-          color: 'green',
-          position: 'top',
-        });
-      } else {
-        this.$q.notify({
-          message: 'Please enter valid credentials.',
-          color: 'red',
-          position: 'top',
-        });
-      }
-    },
-    logout() {
-      this.userLoggedIn = false;
-      this.$q.notify({
-        message: 'Logout successful!',
-        color: 'blue',
-        position: 'top',
-      });
-    },
-  },
+const toggleProfileMenu = () => {
+  isProfileMenuOpen.value = !isProfileMenuOpen.value;
+};
+
+const logout = () => {
+  alert('You have logged out!');
+};
+
+const goHome = () => {
+  alert('Going to Home');
+};
+
+const goProfile = () => {
+  alert('Going to Profile');
 };
 </script>
 
-
 <style scoped>
-.my-card {
-  background: linear-gradient(to right, #ffffff, #f4f4f4);
-  border: 1px solid #dcdcdc;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-  border-radius: 16px;
-  position: relative;
-  overflow: hidden;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
 
-.my-card:hover {
-  transform: translateY(-10px);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
-}
-
-.my-card:active {
-  transform: translateY(5px);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-}
-
-.text-subtitle2 {
-  color: #757575;
-}
-
-.text-h4 {
-  font-size: 1.8rem;
-  font-weight: bold;
-  color: #1e88e5; /* Accent color for title */
-}
-
-.text-body2 {
-  font-size: 1.1rem;
-  color: #616161;
-}
-
-.full-width {
-  width: 100%;
-}
-
-.q-btn {
-  border-radius: 50px;
-  transition: background-color 0.3s ease, transform 0.2s ease;
-  padding: 12px 24px;
-  font-size: 1rem;
-}
-
-.q-btn:disabled {
-  background-color: #bdbdbd;
-}
-
-.q-btn--round {
-  border-radius: 50%;
-  padding: 12px;
-  width: 50px;
-  height: 50px;
-}
-
-.custom-input input {
-  font-size: 1rem;
-  padding: 12px;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
-  background-color: #fafafa;
-}
-
-.custom-input input:focus {
-  border-color: #1e88e5;
-  box-shadow: 0 0 10px rgba(30, 136, 229, 0.5);
-}
-
-.custom-input input:hover {
-  border-color: #2196f3;
-}
-
-.custom-btn {
-  border-radius: 50px;
-  background: linear-gradient(90deg, #1e88e5, #42a5f5);
+.navbar {
+  background: linear-gradient(#0a1a3d, #1e2a4e);
   color: white;
-  text-transform: uppercase;
-  font-weight: bold;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px, rgba(0, 0, 0, 0.1) 0px 1px 3px;
+  margin-bottom: 0;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
-.custom-btn:hover {
-  background: linear-gradient(90deg, #1565c0, #1e88e5);
-  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+
+.container {
+  max-width: 7xl;
+  margin: 0 auto;
+  padding: 0 1rem;
 }
 
-.custom-btn:disabled {
-  background-color: #90caf9;
-}
 
-.q-btn-group {
+.navbar-content {
   display: flex;
-  gap: 8px;
-  justify-content: center;
-  margin-top: 20px;
+  align-items: center;
+  justify-content: space-between;
+  height: 4rem;
+  flex-wrap: wrap;
 }
 
-.q-btn-group .q-btn {
-  font-size: 24px;
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+
+}
+
+.logo-icon {
+  background-color: rgba(255, 255, 255, 0.2);
+  padding: 0.5rem;
+  border-radius: 50%;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: rgba(0, 0, 0, 0.2) 0px 2px 5px;
+}
+
+.logo-icon:hover {
+  transform: scale(1.2);
+  box-shadow: rgba(0, 0, 0, 0.4) 0px 6px 12px;
+}
+
+.bus-icon {
+  color: #ffffff;
+  transition: color 0.3s ease;
+}
+
+.bus-icon:hover {
   color: #ffeb3b;
 }
 
-.q-btn-group .q-btn:hover {
-  background-color: #fff176;
-}
 
-.q-spinner-bubbles {
-  animation: spin 1s ease-in-out infinite;
-}
-
-@keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
-}
-
-.q-dialog .q-card {
-  padding: 24px;
-  border-radius: 16px;
-}
-
-.q-dialog .q-card .text-h6 {
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: #ffffff;
-}
-
-.q-dialog .q-card-section {
-  font-size: 1rem;
-  color: #f1f1f1;
-}
-
-.q-dialog .q-card-actions {
-  justify-content: flex-end;
-}
-
-.q-dialog .q-btn {
-  background-color: #ffffff;
-  color: #00796b;
+.logo-title {
   font-weight: bold;
-}
-
-.q-dialog .q-btn:hover {
-  background-color: #004d40;
+  font-size: 1.25rem;
   color: white;
+  transition: color 0.3s ease;
 }
 
-.q-card-section {
-  margin-bottom: 20px;
+.logo-title:hover {
+  color: #ffeb3b; /* Golden yellow */
 }
 
-.q-page-container {
-  padding: 16px;
+/* Right-side content (notifications, profile) */
+.right-side {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
 }
 
-@media (max-width: 600px) {
-  .my-card {
-    margin: 15px;
+.notification-btn {
+  position: relative;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.notification-btn:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  transform: scale(1.1);
+}
+
+/* Notification dot */
+.notification-dot {
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 0.5rem;
+  width: 0.5rem;
+  background-color: #f56565;
+  border-radius: 50%;
+  margin: 0;
+}
+
+
+/* Profile dropdown */
+.profile-dropdown {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  border-left: 1px solid rgba(255, 255, 255, 0.2);
+  padding-left: 1rem;
+  position: relative;
+}
+
+/* Profile info styling */
+.profile-info {
+  text-align: right;
+  gap: 0;
+}
+
+.profile-name {
+  font-weight: 500;
+  margin-bottom: 0;
+  margin-top: 10px;
+}
+
+.profile-id {
+  font-size: 0.875rem;
+  color: rgba(59, 130, 246, 0.75);
+}
+
+/* Profile avatar */
+.profile-avatar {
+  border-radius: 50%;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.profile-avatar:hover {
+  transform: scale(1.1);
+  box-shadow: rgba(0, 0, 0, 0.2) 0px 2px 5px;
+}
+
+/* Profile menu */
+.profile-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background-color: white;
+  color: black;
+  padding: 1rem;
+  border-radius: 0.375rem;
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px, rgba(0, 0, 0, 0.1) 0px 1px 3px;
+  width: 10rem;
+}
+
+/* Side menu */
+.side-menu {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 250px;
+  height: 100%;
+  background-color: #1e3a8a;
+  padding: 2rem 1rem;
+  box-shadow: 2px 0px 5px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+}
+
+.side-menu q-item {
+  padding: 0.8rem;
+  border-radius: 8px;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.side-menu q-item:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  transform: translateX(5px);
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  .logo {
+    margin: 0;
+    padding-top: 8px;
   }
 
-  .text-h4 {
-    font-size: 1.5rem;
+  .container {
+    margin: 0;
+    padding: 0;
   }
 
-  .q-btn-group {
+  .navbar-content {
+    display: flex;
     flex-direction: column;
   }
 
-  .custom-btn {
-    font-size: 1rem;
-    padding: 10px 20px;
+  .right-side {
+    justify-content: flex-end;
+    
+    margin-left: 40px;
   }
 
-  .custom-input input {
-    padding: 10px;
-    font-size: 0.9rem;
+  .side-menu {
+    display: none;
   }
 
-  .text-body2 {
-    font-size: 1rem;
+  .profile-dropdown {
+    margin-left: 0px;
+  }
+
+  .profile-menu {
+    width: auto;
   }
 }
 </style>
-
