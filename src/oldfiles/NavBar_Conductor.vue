@@ -298,9 +298,9 @@ const goProfile = () => {
     flex-direction: column;
   }
 
-  .custom-btn {
-    font-size: 1rem;
-    padding: 10px 20px;
+  .right-side {
+    justify-content: flex-end;
+    margin-left: 40px;
   }
 
   .side-menu {

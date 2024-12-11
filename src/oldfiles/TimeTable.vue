@@ -59,6 +59,7 @@
 
         <q-btn
           class="join-button"
+          
           @click="joinRoute(route)"
           label="Join"
           color="white"
@@ -288,7 +289,7 @@ const joinRoute = (route) => {
 
 .join-button:hover {
   background-color: #1d4ed8;
-  transform: scale(1.05); 
+  transform: scale(1.05);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
