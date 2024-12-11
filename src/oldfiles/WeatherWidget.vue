@@ -1,22 +1,19 @@
 <template>
   <q-card class="weather-widget">
     <div class="bg-image-overlay">
-      <q-img
-        :src="bgImageUrl"
-        alt="weather background"
-        class="bg-image"
-      />
+      <q-img :src="bgImageUrl" alt="weather background" class="bg-image" />
     </div>
     <div class="weather-content">
       <div class="weather-info">
         <h1 class="weather-title">Weather Conditions</h1>
-        <div class="flex items-center space-x-3">
+        <div class="flex items-center justify-right space-x-3" style="padding-left: 4rem;">
           <q-icon :name="currentIcon" class="icon-sun" />
-          <div>
+          <div class="text-center">
             <span class="temperature">{{ temperature }}°C</span>
             <p class="city-name">{{ cityName }}</p>
           </div>
         </div>
+
       </div>
       <div class="weather-details">
         <div v-for="(detail, index) in weatherDetails" :key="index" class="weather-detail">
@@ -138,8 +135,9 @@ onMounted(() => {
   overflow: hidden;
   width: 55%;
   height: 270px;
+  margin-top: 2rem;
   margin-bottom: 2rem;
-  margin-left: 3rem;
+  margin-left: 1rem;
 }
 
 .bg-image-overlay {
@@ -174,6 +172,7 @@ onMounted(() => {
   font-size: 2rem;
   font-weight: 700;
   margin-bottom: 1.5rem;
+  margin-top: 0;
 }
 
 .icon-sun {
@@ -199,6 +198,7 @@ onMounted(() => {
   flex-direction: column;
   justify-content: flex-start;
   gap: 12px;
+  margin-top: 3rem;
 }
 
 .weather-detail {

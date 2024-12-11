@@ -1,57 +1,3 @@
-<!--
-
-<template>
-  <NextPage />
-</template>
-
-<script setup>
-import NextPage from './NextPage.vue';
-</script>
-
- -->
-
-<!-- <template>
-  <ProfilePage />
-</template>
-
-<script setup>
-import ProfilePage from './ProfilePage.vue';
-</script> -->
-
-
-
-<!-- <template>
-  <MorePage />
-</template>
-
-<script setup>
-import MorePage from './MorePage.vue';
-</script> -->
-
-
-<template>
-  <FeedbackPage />
-</template>
-
-<script setup>
-import FeedbackPage from './FeedbackPage.vue';
-</script>
-
-
-
-
-
-<!-- <template>
-  <SumitPage />
-</template>
-
-<script setup>
-import SumitPage from './SumitPage.vue';
-</script> -->
-
-
-
-<!--
 <template>
   <UpcomingSchedule />
   <QuickStats />
@@ -59,17 +5,17 @@ import SumitPage from './SumitPage.vue';
   <TimeTable />
   <WeeklySchedule />
   <NavBar />
-  <ComponentS />
+  <BottomBar />
 </template>
 
 <script>
-import NavBar from 'pages/NavBar.vue';
-import UpcomingSchedule from 'pages/UpcomingSchedule.vue';
-import QuickStats from 'pages/QuickStats.vue';
-import TimeTable from 'pages/TimeTable.vue';
-import WeatherWidget from 'pages/WeatherWidget.vue';
-import WeeklySchedule from 'pages/WeeklySchedule.vue';
-import ComponentS from 'pages/ComponentS.vue';
+import NavBar from 'src/oldfiles/NavBar.vue';
+import UpcomingSchedule from 'src/oldfiles/UpcomingSchedule.vue';
+import QuickStats from 'src/oldfiles/QuickStats.vue';
+import TimeTable from 'src/oldfiles/TimeTable.vue';
+import WeatherWidget from 'src/oldfiles/WeatherWidget.vue';
+import WeeklySchedule from 'src/oldfiles/WeeklySchedule.vue';
+import BottomBar from 'src/oldfiles/BottomBar.vue';
 
 export default {
   components: {
@@ -79,16 +25,16 @@ export default {
     TimeTable,
     WeatherWidget,
     WeeklySchedule,
-    ComponentS
+    BottomBar
   },
 };
 </script>
 
 <style>
 .page{
-  background-image: url('src/pages/background1.png');
+  background-image: url('src/oldfiles/background1.png');
   background: absolute;
   background-blend-mode:soft-light;
 }
 
-</style> -->
+</style>

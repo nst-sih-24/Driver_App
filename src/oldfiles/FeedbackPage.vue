@@ -1,17 +1,15 @@
 <template>
   <q-layout view="lHh Lpr lFf">
-    <!-- Page container for layout -->
     <q-page-container>
+      <!-- Feedback page container -->
       <q-page class="q-pa-md">
-
-        <!-- Feedback Page Container -->
-        <q-card class="my-card q-mb-md shadow-4" style="max-width: 800px; margin: auto; border-radius: 16px; position: relative;">
+        <q-card class="my-card q-mb-md shadow-10" style="max-width: 800px; margin: auto; border-radius: 16px;">
           <q-card-section class="q-pa-none">
             <div class="text-h4 text-center q-mb-md" :class="titleClass">
               We Value Your Feedback
             </div>
             <div class="text-body2 text-center q-mb-md text-muted">
-              Share your thoughts with us so we can improve and serve you better.
+              Share your thoughts with us to help us improve and serve you better.
             </div>
           </q-card-section>
 
@@ -23,9 +21,8 @@
               label="Your Name"
               autofocus
               :rules="[val => val && val.length > 0 || 'Name is required']"
-              class="q-mb-md"
+              class="q-mb-md custom-input"
               dense
-              :class="inputClass"
             />
 
             <!-- Email Input -->
@@ -33,37 +30,52 @@
               filled
               v-model="email"
               label="Your Email"
-              :rules="[val => val && val.length > 0 || 'Email is required']"
-              class="q-mb-md"
+              :rules="[val => val && /.+@.+\..+/.test(val) || 'Please enter a valid email']"
+              class="q-mb-md custom-input"
               dense
-              :class="inputClass"
             />
 
-            <!-- Feedback Textarea -->
+            <!-- Phone Number Input -->
+            <q-input
+              filled
+              v-model="phone"
+              label="Your Phone Number"
+              type="tel"
+              :rules="[val => val && /^\d{10}$/.test(val) || 'Please enter a valid 10-digit phone number']"
+              class="q-mb-md custom-input"
+              dense
+            />
+
+            <!-- Suggestions Textarea -->
             <q-input
               filled
               v-model="feedback"
-              label="Your Feedback"
+              label="Your Suggestions"
               type="textarea"
-              :rules="[val => val && val.length > 10 || 'Feedback must be at least 10 characters long']"
-              class="q-mb-md"
+              :rules="[val => val && val.length > 10 || 'Suggestions must be at least 10 characters long']"
+              class="q-mb-md custom-input"
               rows="4"
-              :class="inputClass"
             />
 
-            <!-- Rating -->
+            <!-- Rating Section -->
             <div class="q-mb-md">
-              <div class="text-subtitle2">Rate Us</div>
-              <q-btn-group spread>
+              <div class="text-subtitle2 text-center mb-1">How would you rate us?</div>
+              <div class="rating-container text-center">
                 <q-btn
                   v-for="i in 5"
                   :key="i"
                   :icon="i <= rating ? 'star' : 'star_border'"
-                  @click="setRating(i)"
-                  class="q-btn--round q-btn--flat"
+                  @click="toggleRating(i)"
+                  class="rating-btn q-btn--round q-btn--flat"
                   color="yellow-8"
+                  size="lg"
+                  :class="{ 'active': i <= rating, 'clicked': i === rating }"
+                  style="transition: transform 0.2s ease-in-out;"
+                  @mouseover="hoverRating(i)"
+                  @mousedown="onButtonPress(i)"
+                  @mouseup="onButtonRelease(i)"
                 />
-              </q-btn-group>
+              </div>
             </div>
 
             <!-- Submit Button -->
@@ -72,10 +84,10 @@
               color="primary"
               type="submit"
               :disable="loading || !isValid"
-              class="full-width q-mt-md"
+              class="full-width q-mt-md custom-btn"
               :loading="loading"
               loading-color="white"
-              :class="btnClass"
+              style="transition: all 0.3s ease-out;"
             />
 
             <!-- Loading Spinner -->
@@ -107,6 +119,21 @@
             </q-card-actions>
           </q-card>
         </q-dialog>
+
+        <!-- Login Dialog -->
+        <q-dialog v-model="loginDialog">
+          <q-card>
+            <q-card-section>
+              <div class="text-h6">Login</div>
+              <q-input filled v-model="loginEmail" label="Email" />
+              <q-input filled v-model="loginPassword" label="Password" type="password" />
+            </q-card-section>
+            <q-card-actions>
+              <q-btn flat label="Cancel" @click="loginDialog = false" />
+              <q-btn flat label="Login" color="primary" @click="loginUser" />
+            </q-card-actions>
+          </q-card>
+        </q-dialog>
       </q-page>
     </q-page-container>
   </q-layout>
@@ -119,24 +146,65 @@ export default {
     return {
       name: "",
       email: "",
+      phone: "",
       feedback: "",
       loading: false,
       showSuccess: false,
       showError: false,
       rating: 0,
-      titleClass: "text-primary", // Dynamic title color
-      inputClass: "custom-input", // Custom input styling
-      btnClass: "custom-btn", // Custom button styling
+      titleClass: "text-primary",
+      inputClass: "custom-input",
+      btnClass: "custom-btn",
+      userLoggedIn: false,
+      loginDialog: false,
+      loginEmail: "",
+      loginPassword: "",
+      pressedStar: null, // Keeps track of the pressed star for button press effect
     };
   },
   computed: {
     isValid() {
-      return this.name.length > 0 && this.email.length > 0 && this.feedback.length > 10 && this.rating > 0;
+      return (
+        this.name.length > 0 &&
+        this.email.length > 0 &&
+        this.phone.length === 10 &&
+        this.feedback.length > 10 &&
+        this.rating > 0
+      );
     },
   },
   methods: {
-    setRating(value) {
-      this.rating = value;
+    toggleRating(value) {
+      // Toggle the rating value if the clicked star is already selected
+      if (this.rating === value) {
+        this.rating = 0;
+      } else {
+        this.rating = value;
+      }
+    },
+    hoverRating(i) {
+      // Slight scaling effect when hovering over a star
+      this.$nextTick(() => {
+        const btns = this.$el.querySelectorAll(".rating-btn");
+        btns[i - 1].style.transform = "scale(1.1)";
+      });
+    },
+    onButtonPress(i) {
+      // Handle button press animation effect
+      this.pressedStar = i;
+      const btn = this.$el.querySelectorAll(".rating-btn")[i - 1];
+      if (btn) {
+        btn.style.transform = "scale(0.95)"; // Press down effect
+      }
+    },
+    onButtonRelease(i) {
+      // Reset button after release
+      this.$nextTick(() => {
+        const btn = this.$el.querySelectorAll(".rating-btn")[i - 1];
+        if (btn) {
+          btn.style.transform = "scale(1)"; // Release effect
+        }
+      });
     },
     async submitFeedback() {
       if (!this.$refs.form.validate()) {
@@ -146,9 +214,10 @@ export default {
       this.loading = true;
 
       try {
-        // Simulate an API call with random success/failure
         const isSuccess = Math.random() > 0.5;
-        await new Promise((resolve, reject) => setTimeout(isSuccess ? resolve : reject, 2000));
+        await new Promise((resolve, reject) =>
+          setTimeout(isSuccess ? resolve : reject, 2000)
+        );
 
         if (isSuccess) {
           this.showSuccess = true;
@@ -159,40 +228,80 @@ export default {
         this.loading = false;
       }
     },
+    loginUser() {
+      if (this.loginEmail && this.loginPassword) {
+        this.userLoggedIn = true;
+        this.loginDialog = false;
+        this.$q.notify({
+          message: 'Login successful!',
+          color: 'green',
+          position: 'top',
+        });
+      } else {
+        this.$q.notify({
+          message: 'Please enter valid credentials.',
+          color: 'red',
+          position: 'top',
+        });
+      }
+    },
+    logout() {
+      this.userLoggedIn = false;
+      this.$q.notify({
+        message: 'Logout successful!',
+        color: 'blue',
+        position: 'top',
+      });
+    },
   },
 };
 </script>
 
 <style scoped>
 .my-card {
-  background: linear-gradient(to right, #ffffff, #f4f4f4);
-  border: 1px solid #dcdcdc;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  border: none;
+  box-shadow: 0 15px 50px rgba(0, 0, 0, 0.1);
   border-radius: 16px;
   position: relative;
   overflow: hidden;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition: all 0.3s ease;
 }
+
 .my-card:hover {
-  transform: translateY(-10px);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+  transform: translateY(-8px);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
 }
+
 .my-card:active {
-  transform: translateY(5px);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  transform: translateY(4px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
 }
 
 .text-subtitle2 {
   color: #757575;
 }
 
-.full-width {
-  width: 100%;
+.text-h4 {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #1e88e5;
+}
+
+.text-body2 {
+  font-size: 1.1rem;
+  color: #616161;
 }
 
 .q-btn {
-  border-radius: 12px;
-  transition: background-color 0.3s ease, transform 0.2s ease;
+  border-radius: 50px;
+  transition: transform 0.2s ease-in-out, background-color 0.3s ease;
+  padding: 12px 24px;
+  font-size: 1rem;
+}
+
+.q-btn:hover {
+  background-color: #0288d1;
+  transform: scale(1.05);
 }
 
 .q-btn:disabled {
@@ -201,69 +310,75 @@ export default {
 
 .q-btn--round {
   border-radius: 50%;
-  padding: 10px;
-  width: 40px;
-  height: 40px;
+  padding: 12px;
+  width: 50px;
+  height: 50px;
+  transition: transform 0.2s ease-in-out;
+}
+
+.rating-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.rating-btn {
+  margin: 0 8px;
+  cursor: pointer;
 }
 
 .custom-input input {
   font-size: 1rem;
   padding: 12px;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
-}
-.custom-input input:focus {
-  border-color: #1e88e5;
-  box-shadow: 0 0 10px rgba(30, 136, 229, 0.5);
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
 }
 
 .custom-btn {
-  border-radius: 50px;
-  background: linear-gradient(90deg, #1e88e5, #42a5f5);
-  color: white;
-  text-transform: uppercase;
+  border-radius: 30px;
+  padding: 14px;
   font-weight: bold;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  background: linear-gradient(45deg, #ff7e5f, #feb47b); /* Gradient background */
+  transition: background-color 0.3s ease, transform 0.3s ease;
 }
+
 .custom-btn:hover {
-  background: linear-gradient(90deg, #1565c0, #1e88e5);
-  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
-}
-.custom-btn:disabled {
-  background-color: #90caf9;
+  background: linear-gradient(45deg, #ff7e5f, #ff6347);
+  transform: translateY(-4px);
 }
 
-.q-btn-group {
-  display: flex;
-  gap: 5px;
-  justify-content: center;
-  margin-top: 10px;
+.custom-btn:active {
+  background: linear-gradient(45deg, #feb47b, #ff7e5f);
+  transform: translateY(2px);
 }
 
-.q-btn-group .q-btn {
-  font-size: 20px;
+.full-width {
+  width: 100%;
+}
+
+.q-dialog {
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.q-dialog .q-card {
+  background-color: #ffffff;
+  border-radius: 12px;
 }
 
 .q-spinner-bubbles {
-  animation: spin 1s ease-in-out infinite;
+  animation: spin 1.5s infinite linear;
 }
 
 @keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
-@media (max-width: 600px) {
-  .my-card {
-    margin: 10px;
-  }
-  .text-h4 {
-    font-size: 1.2rem;
-  }
+.active {
+  transform: scale(1.1);
+}
+
+.clicked {
+  transform: scale(1.1);
 }
 </style>

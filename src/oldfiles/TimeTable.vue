@@ -24,13 +24,6 @@
         :key="index"
         class="route-card"
       >
-        <div class="route-card-background">
-          <q-img
-            :src="getBusImage(index)"
-            alt="Bus Image"
-            class="background-image"
-          />
-        </div>
         <div class="route-details">
           <div class="route-header">
             <span class="route-time">{{ route.time }}</span>
@@ -79,25 +72,16 @@
 
 <script setup>
 import { ref, computed } from 'vue';
-import { QIcon, QBtn, QCard, QImg } from 'quasar';
+import { QIcon, QBtn, QCard } from 'quasar';
 
 const activeTab = ref('today');
 
 const routes = [
-  { time: '09:00', route: 'Route 423', from: 'Dwarka', to: 'Nehru Place', status: 'Completed' },
-  { time: '11:30', route: 'Route 340', from: 'Nehru Place', to: 'Karol Bagh', status: 'In Progress' },
-  { time: '14:00', route: 'Route 423', from: 'Karol Bagh', to: 'Dwarka', status: 'Upcoming' },
-  { time: '16:30', route: 'Route 340', from: 'Dwarka', to: 'Nehru Place', status: 'Upcoming' },
+  { time: '09:00 AM', route: 'Route 423', from: 'Dwarka', to: 'Nehru Place', status: 'Completed' },
+  { time: '11:30 AM', route: 'Route 340', from: 'Nehru Place', to: 'Karol Bagh', status: 'In Progress' },
+  { time: '14:00 PM', route: 'Route 423', from: 'Karol Bagh', to: 'Dwarka', status: 'Upcoming' },
+  { time: '16:30 PM', route: 'Route 340', from: 'Dwarka', to: 'Nehru Place', status: 'Upcoming' },
 ];
-
-const busImages = [
-  'https://images.unsplash.com/photo-1570125909232-eb263c188f7e?w=800',
-  'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=800',
-  'https://img.freepik.com/premium-photo/night-bus-free-photo-hd-8k-wallpaper_915071-92097.jpg',
-  'https://images.unsplash.com/photo-1494515843206-f3117d3f51b7?w=800',
-];
-
-const getBusImage = (index) => busImages[index % busImages.length];
 
 const filteredRoutes = computed(() => {
   return routes.filter(() => {
@@ -119,7 +103,7 @@ const joinRoute = (route) => {
   padding: 1.75rem;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   width: 60%;
-  margin-left: 3rem;
+  margin-left: 1rem;
   margin-bottom: 2rem;
   color: #1f2937;
   font-family: 'Poppins', sans-serif;
@@ -194,19 +178,12 @@ const joinRoute = (route) => {
   flex-direction: column;
   justify-content: space-between;
   width: 100%;
+  overflow: hidden;
 }
 
-.route-card-background {
-  position: absolute;
-  inset: 0;
-  opacity: 0.5;
-}
-
-.background-image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center;
+.route-card:hover {
+  transform: translateY(-8px); /* Smooth floating effect */
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
 }
 
 .route-details {
@@ -222,15 +199,20 @@ const joinRoute = (route) => {
 }
 
 .route-time {
-  font-size: 1.125rem;
-  font-weight: 400;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #2563eb;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .status-label {
-  padding: 0.3rem 1rem;
+  padding: 0.5rem 1.25rem;
   border-radius: 9999px;
-  font-size: 0.9rem;
-  font-weight: 400;
+  font-size: 1.1rem;
+  font-weight: 500;
+  text-transform: capitalize;
+  color: #10b981;
+  background-color: #d1fae5;
   transition: background-color 0.3s, color 0.3s;
 }
 
@@ -252,19 +234,19 @@ const joinRoute = (route) => {
 .route-location {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  margin-top: 0.75rem;
+  gap: 1.5rem;
+  margin-top: 1rem;
 }
 
 .location {
   display: flex;
   align-items: center;
-  font-size: 1rem;
+  font-size: 1.125rem;
 }
 
 .from-to {
   font-size: 1.125rem;
-  font-weight: 300;
+  font-weight: 400;
   color: #1f2937;
 }
 
@@ -272,7 +254,7 @@ const joinRoute = (route) => {
   height: 1.25rem;
   width: 1.25rem;
   margin-right: 0.25rem;
-  color: #000000;
+  color: #2563eb;
 }
 
 .arrow-icon {
@@ -283,7 +265,9 @@ const joinRoute = (route) => {
 
 .route-info {
   font-size: 1rem;
+  font-weight: 400;
   margin-top: 0.75rem;
+  color: #6b7280;
 }
 
 .join-button {
@@ -304,6 +288,8 @@ const joinRoute = (route) => {
 
 .join-button:hover {
   background-color: #1d4ed8;
+  transform: scale(1.05); 
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 @media (max-width: 768px) {

@@ -5,7 +5,7 @@
         <div v-if="!isEditing" class="profile-view">
           <q-card class="profile-card shadow-2 hover-shadow-4 bg-white rounded-lg border-color-light">
             <q-card-section class="text-center">
-              <q-avatar size="200px" class="profile-avatar border-primary">
+              <q-avatar size="150px" class="profile-avatar border-primary">
                 <q-img :src="profilePhotoUrl || '/default-avatar.png'" alt="Profile Photo" />
               </q-avatar>
 

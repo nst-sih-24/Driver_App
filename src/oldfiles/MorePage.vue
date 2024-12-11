@@ -1,13 +1,17 @@
 <template>
   <q-layout view="lHh Lpr lFf">
+    <!-- NavBar Area -->
+     <q-header>
+      <a href="src/oldfiles/NavBar.vue"></a>
+     </q-header>
     <!-- Main Content Area -->
     <q-page-container>
+
       <div class="profile-page">
 
         <!-- Content Area -->
         <div class="content">
           <h2>{{ activeSection.title }}</h2>
-          <p>{{ activeSection.description }}</p>
 
           <!-- Links to Sections -->
           <div class="links">
@@ -37,14 +41,6 @@ export default {
       activeSection: {
         title: 'Welcome',
         description: 'Please select a section from the sidebar.',
-      },
-      sections: {
-        home: { title: 'Home', description: 'This is your home section.' },
-        profile: { title: 'Profile', description: 'Here is your profile information.' },
-        settings: { title: 'Settings', description: 'Manage your account settings here.' },
-        timetable: { title: 'Timetable', description: 'View your timetable here.' },
-        helpCenter: { title: 'Help Center', description: 'Get assistance and find answers to common questions.' },
-        feedback: { title: 'Feedback', description: 'Provide your feedback to help improve our service.' },
       },
     };
   },
@@ -77,7 +73,7 @@ body {
 
 }
 
-/* .profile-photo {
+.profile-photo {
   width: 100%;
   height: 0px;
   background-color: #3498db;
@@ -88,7 +84,7 @@ body {
   border-bottom-right-radius: 20%;
   border-bottom: 2px solid #ddd;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-} */
+}
 
 .profile-photo img {
   width: 120px;

@@ -49,7 +49,7 @@
 
   <GoogleMap
     api-key="AIzaSyCX7YZQFXhOtlyC-El4uG9baq4qSY68MZg"
-    style="width: 100%; height: 500px"
+    style="width: 100%; height: 450px"
     :center="center"
     :zoom="15"
   >

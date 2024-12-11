@@ -176,6 +176,8 @@ export default {
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   margin: auto;
   margin-top: 50px;
+  margin-bottom:20px;
+  height: 210px;
   max-width: 100%;
 }
 
