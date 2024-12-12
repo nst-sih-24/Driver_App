@@ -110,7 +110,7 @@ const goProfile = () => {
 <style scoped>
 
 .navbar {
-  background: linear-gradient(#0a1a3d, #1e2a4e);
+  background: linear-gradient(#0a1a3d, #284fc3);
   color: white;
   box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px, rgba(0, 0, 0, 0.1) 0px 1px 3px;
   margin-bottom: 0;

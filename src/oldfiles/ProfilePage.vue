@@ -1,162 +1,79 @@
 <template>
   <q-layout view="lHh Lpr lFf">
+    <!-- Header -->
+    <q-header class="header-container" elevated>
+      <div class="header-logo">
+        <i class="fas fa-bus-alt logo-icon"></i>
+        <span class="logo-text">NAV SMART</span>
+      </div>
+    </q-header>
+
     <q-page-container>
-      <q-page class="profile-form-container q-pa-md">
-        <div v-if="!isEditing" class="profile-view">
-          <q-card class="profile-card shadow-2 hover-shadow-4 bg-white rounded-lg border-color-light">
-            <q-card-section class="text-center">
-              <q-avatar size="150px" class="profile-avatar border-primary">
-                <q-img :src="profilePhotoUrl || '/default-avatar.png'" alt="Profile Photo" />
-              </q-avatar>
+      <q-page class="page-background q-px-sm q-pt-xl q-pb-lg">
+        <div class="profile-page">
 
-              <div class="text-h4 q-mt-md text-weight-bold profile-name">{{ formData.name || 'Profile Name' }}</div>
-              <div class="text-subtitle1 text-grey-7 q-mb-md profile-email">{{ formData.email || 'email@example.com' }}</div>
+          <!-- Profile Icon Section -->
+          <div class="profile-photo">
+            <i class="fas fa-user-circle profile-icon"></i>
+          </div>
 
-              <q-card flat bordered class="profile-details q-mt-md q-pa-sm bg-light-grey">
-                <q-list class="q-pl-none">
-                  <q-item>
-                    <q-item-section avatar>
-                      <q-icon name="phone" color="primary" />
-                    </q-item-section>
-                    <q-item-section>{{ formData.phone || 'Not provided' }}</q-item-section>
-                  </q-item>
-                  <q-item>
-                    <q-item-section avatar>
-                      <q-icon name="cake" color="primary" />
-                    </q-item-section>
-                    <q-item-section>{{ formData.dob || 'Not provided' }}</q-item-section>
-                  </q-item>
-                  <q-item>
-                    <q-item-section avatar>
-                      <q-icon name="location_on" color="primary" />
-                    </q-item-section>
-                    <q-item-section>{{ formData.address || 'No address' }}</q-item-section>
-                  </q-item>
-                </q-list>
-              </q-card>
+          <!-- Content Area -->
+          <div class="content">
+            <h2>{{ activeSection.title }}</h2>
+            <p>{{ activeSection.description }}</p>
 
+            <div class="profile-details">
+              <div class="detail-item">
+                <label>Name:</label>
+                <div v-if="!isEditing">{{ name }}</div>
+                <q-input v-else filled v-model="editedName" dense />
+              </div>
+
+              <div class="detail-item q-mt-md">
+                <label>Email:</label>
+                <div v-if="!isEditing">{{ email }}</div>
+                <q-input v-else filled v-model="editedEmail" type="email" dense />
+              </div>
+
+              <div class="detail-item q-mt-md">
+                <label>Phone:</label>
+                <div v-if="!isEditing">{{ phone }}</div>
+                <q-input v-else filled v-model="editedPhone" type="tel" dense />
+              </div>
+            </div>
+
+            <!-- Edit / Save / Cancel Buttons -->
+            <div class="button-row q-mt-xl">
               <q-btn
-                @click="startEditing"
-                label="Edit Profile"
+                v-if="!isEditing"
+                label="Edit"
                 color="primary"
-                icon="edit"
-                class="q-mt-md hover-shadow-2 rounded bg-gradient-btn"
-                unelevated
+                @click="startEditing"
+                class="edit-btn q-mr-sm"
               />
-            </q-card-section>
-          </q-card>
-        </div>
+              <div v-else class="edit-buttons">
+                <q-btn label="Save" color="positive" class="q-mr-sm" @click="saveChanges" />
+                <q-btn label="Cancel" color="negative" @click="cancelEditing" />
+              </div>
+            </div>
 
-        <div v-else class="profile-edit">
-          <q-form @submit.prevent="validateAndSubmit" class="q-gutter-md">
-            <q-card class="profile-edit-card shadow-2 hover-shadow-4 rounded-lg border-color-light">
-              <q-card-section>
-                <div class="text-h5 q-mb-md text-weight-bold text-primary">Edit Profile</div>
+            <!-- Navigation Links -->
+            <div class="links q-mt-xl">
+              <ul>
+                <li><a href="#home" @click="setActiveSection('home')"><i class="fas fa-home"></i> Home <i class="fas fa-chevron-right"></i></a></li>
+                <!-- Removed Profile option here -->
+                <li><a href="#history" @click="setActiveSection('history')"><i class="fas fa-history"></i> History of Past Journeys <i class="fas fa-chevron-right"></i></a></li>
+                <li><a href="#" @click="setActiveSection('helpSupport')"><i class="fas fa-question-circle"></i> Help & Support <i class="fas fa-chevron-right"></i></a></li>
+                <li><a href="#feedback" @click="setActiveSection('feedback')"><i class="fas fa-comment-dots"></i> Feedback <i class="fas fa-chevron-right"></i></a></li>
+                <li><a href="#" @click="setActiveSection('leaveRequest')"><i class="fas fa-plane"></i> Leave Request <i class="fas fa-chevron-right"></i></a></li>
+              </ul>
+            </div>
 
-                <div class="avatar-upload-container q-mb-md">
-                  <q-avatar size="150px" class="profile-avatar cursor-pointer">
-                    <q-img :src="profilePhotoUrl || '/default-avatar.png'" alt="Profile Photo" />
-                    <div class="avatar-overlay" @click="triggerFileInput">
-                      <q-icon name="camera_alt" size="40px" color="white" />
-                    </div>
-                  </q-avatar>
-                  <input
-                    ref="profilePhotoInput"
-                    type="file"
-                    accept="image/*"
-                    @change="handleFileUpload"
-                    style="display: none"
-                  />
-                </div>
-
-                <q-input
-                  v-model="formData.name"
-                  label="Full Name"
-                  outlined
-                  :rules="[val => !!val || 'Name is required']"
-                  class="q-mt-md bg-input-field border-input"
-                  dense
-                />
-
-                <q-input
-                  v-model="formData.email"
-                  type="email"
-                  label="Email"
-                  outlined
-                  :rules="[val => !!val || 'Email is required', isValidEmail]"
-                  class="q-mt-md bg-input-field border-input"
-                  dense
-                />
-
-                <q-input
-                  v-model="formData.phone"
-                  type="tel"
-                  label="Phone Number"
-                  outlined
-                  :rules="[isValidPhone]"
-                  class="q-mt-md bg-input-field border-input"
-                  dense
-                />
-
-                <q-input
-                  v-model="formData.dob"
-                  type="date"
-                  label="Date of Birth"
-                  outlined
-                  class="q-mt-md bg-input-field border-input"
-                  dense
-                />
-
-                <div class="gender-selector q-mt-md q-mb-md text-center">
-                  <div class="text-subtitle1 q-mb-sm">Gender</div>
-                  <q-btn-toggle
-                    v-model="formData.gender"
-                    toggle-color="primary"
-                    :options="[
-                      {label: 'Male', value: 'Male', icon: 'male', color: 'green'},
-                      {label: 'Female', value: 'Female', icon: 'female', color: 'pink'}
-                    ]"
-                    class="border-input"
-                  />
-                </div>
-
-                <q-input
-                  v-model="formData.address"
-                  label="Address"
-                  type="textarea"
-                  outlined
-                  class="q-mt-md bg-input-field border-input"
-                  dense
-                />
-
-                <q-input
-                  v-model="formData.bio"
-                  label="Bio"
-                  type="textarea"
-                  outlined
-                  class="q-mt-md bg-input-field border-input"
-                  dense
-                />
-              </q-card-section>
-
-              <q-card-actions class="justify-end">
-                <q-btn
-                  label="Cancel"
-                  color="negative"
-                  flat
-                  @click="cancelEditing"
-                  class="q-mr-sm"
-                />
-                <q-btn
-                  type="submit"
-                  label="Save Changes"
-                  color="positive"
-                  unelevated
-                  class="text-bold bg-gradient-btn"
-                />
-              </q-card-actions>
-            </q-card>
-          </q-form>
+            <!-- Logout Button -->
+            <button class="logout-btn q-mt-xl" @click="logout">
+              <i class="fas fa-sign-out-alt"></i> Log Out
+            </button>
+          </div>
         </div>
       </q-page>
     </q-page-container>
@@ -165,215 +82,269 @@
 
 <script>
 export default {
+  name: "ProfilePage",
   data() {
     return {
-      drawer: false,
+      name: "Example",
+      email: "abc@example.com",
+      phone: "1234567890",
       isEditing: false,
-      profilePhotoUrl: null,
-      formData: {
-        name: null,
-        phone: null,
-        dob: null,
-        email: null,
-        gender: null,
-        address: null,
-        bio: null,
+      editedName: "",
+      editedEmail: "",
+      editedPhone: "",
+      activeSection: {
+        title: 'Welcome, Example !',
+        description: 'Please select a section to get started.',
       },
+      sections: {
+        home: { title: 'Home', description: 'Welcome to your dashboard.' },
+        // profile option removed
+        history: { title: 'History of Past Journeys', description: 'Review all your previous trips.' },
+        helpSupport: { title: 'Help & Support', description: 'Find answers or contact support.' },
+        feedback: { title: 'Feedback', description: 'Share your thoughts to help us improve.' },
+        leaveRequest: { title: 'Leave Request', description: 'Submit a leave request for upcoming days.' }
+      }
     };
   },
-  created() {
-    this.loadProfileData();
-  },
   methods: {
-    loadProfileData() {
-      const savedData = JSON.parse(localStorage.getItem('profileData') || '{}');
-      this.formData = { ...this.formData, ...savedData };
-      this.profilePhotoUrl = savedData.profilePhotoUrl || null;
+    logout() {
+      alert("You have been logged out.");
+    },
+    setActiveSection(section) {
+      this.activeSection = this.sections[section];
     },
     startEditing() {
       this.isEditing = true;
+      this.editedName = this.name;
+      this.editedEmail = this.email;
+      this.editedPhone = this.phone;
+    },
+    saveChanges() {
+      // Simple validation
+      if (this.editedName && this.editedEmail && this.editedPhone) {
+        this.name = this.editedName;
+        this.email = this.editedEmail;
+        this.phone = this.editedPhone;
+        this.isEditing = false;
+      } else {
+        alert("Please fill in all fields.");
+      }
     },
     cancelEditing() {
       this.isEditing = false;
-      this.loadProfileData();
-    },
-    triggerFileInput() {
-      this.$refs.profilePhotoInput.click();
-    },
-    handleFileUpload(event) {
-      const file = event.target.files[0];
-      if (file && file.type.startsWith('image/')) {
-        const reader = new FileReader();
-        reader.onload = () => {
-          this.profilePhotoUrl = reader.result;
-        };
-        reader.readAsDataURL(file);
-      }
-    },
-    isValidEmail(val) {
-      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      return emailPattern.test(val) || 'Invalid email format';
-    },
-    isValidPhone(val) {
-      if (!val) return true;
-      const phonePattern = /^\+?(\d{1,3})?[-. ]?\(?(\d{3})\)?[-. ]?(\d{3})[-. ]?(\d{4,6})$/;
-      return phonePattern.test(val) || 'Invalid phone number';
-    },
-    validateAndSubmit() {
-      if (!this.formData.name) {
-        this.$q.notify({
-          message: 'Name is required',
-          color: 'negative',
-          position: 'top'
-        });
-        return;
-      }
-      if (!this.formData.email) {
-        this.$q.notify({
-          message: 'Email is required',
-          color: 'negative',
-          position: 'top'
-        });
-        return;
-      }
-
-      localStorage.setItem('profileData', JSON.stringify({
-        ...this.formData,
-        profilePhotoUrl: this.profilePhotoUrl
-      }));
-
-      this.$q.notify({
-        message: 'Profile updated successfully!',
-        color: 'positive',
-        position: 'top'
-      });
-
-      this.$router.push('/dashboard');
-    },
-  }
+    }
+  },
 };
 </script>
 
 <style scoped>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
-.profile-form-container {
-  background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+body {
+  font-family: 'Inter', sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f0f2f5;
+}
+
+.page-background {
+  background: linear-gradient(135deg, #f5f5f5, #ffffff);
+  min-height: 100vh;
+}
+
+.header-container {
+  background: #3f51b5;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  height: 56px;
+}
+
+.header-logo {
+  display: flex;
+  align-items: center;
+}
+
+.logo-icon {
+  font-size: 24px;
+}
+
+.logo-text {
+  font-size: 20px;
+  font-weight: 600;
+  margin-left: 10px;
+}
+
+.profile-page {
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  margin: 20px auto;
+  max-width: 600px;
+}
+
+.profile-photo {
+  width: 100%;
+  height: 25vh;
+  background: #3f51b5;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: 'Inter', sans-serif;
-  box-sizing: border-box;
+  position: relative;
+  border-bottom-left-radius: 50% 15%;
+  border-bottom-right-radius: 50% 15%;
+  overflow: hidden;
+  box-shadow: inset 0 -10px 30px rgba(0,0,0,0.1);
+}
+
+.profile-icon {
+  color: #fff;
+  font-size: 120px;
+}
+
+.content {
+  flex: 1;
+  padding: 40px 20px;
+  background-color: #ffffff;
+  border-top: 2px solid #ddd;
+  position: relative;
+  font-size: 16px;
+  line-height: 1.6;
+  text-align: center;
+}
+
+.content h2 {
+  color: #333;
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.content p {
+  color: #666;
+  font-size: 16px;
+  margin-bottom: 30px;
+}
+
+.profile-details {
+  text-align: left;
+  max-width: 300px;
+  margin: 0 auto;
+}
+
+.detail-item {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 12px;
+}
+
+.detail-item label {
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 4px;
+}
+
+.links {
+  margin-top: 40px;
+}
+
+.links ul {
+  list-style: none;
   padding: 0;
   margin: 0;
 }
 
-.profile-card, .profile-edit-card {
-  border-radius: 16px;
-  max-width: 950px;
-  width: 100%;
-  background-color: #fff;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1), 0 4px 12px rgba(0, 0, 0, 0.07);
-  transition: transform 0.3s ease;
-  padding: 20px;
+.links ul li {
+  margin: 12px 0;
+  border-radius: 8px;
+  background: #f7f7f9;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  transition: transform 0.3s ease, background-color 0.3s ease;
 }
 
-.profile-card:hover, .profile-edit-card:hover {
-  transform: translateY(-10px);
-}
-
-.profile-avatar {
-  border: 4px solid #2196F3;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-  position: relative;
-  transition: transform 0.3s ease;
-}
-
-.profile-avatar:hover {
-  transform: scale(1.1);
-}
-
-.avatar-upload-container {
-  position: relative;
+.links ul li a {
+  color: #333;
+  text-decoration: none;
+  font-size: 17px;
+  font-weight: 500;
   display: flex;
-  justify-content: center;
-  margin-bottom: 20px;
+  align-items: center;
+  padding: 14px 20px;
+  border-radius: 8px;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-.avatar-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
+.links ul li a i {
+  margin-right: 15px;
+  font-size: 20px;
+}
+
+.links ul li a .fa-chevron-right {
+  margin-left: auto;
+  font-size: 14px;
+  color: #aaa;
+  transition: color 0.3s ease;
+}
+
+.links ul li:hover {
+  transform: translateX(3px);
+  background-color: #e8eaf6;
+}
+
+.links ul li:hover a {
+  color: #333;
+}
+
+.links ul li:hover a .fa-chevron-right {
+  color: #5c6bc0;
+}
+
+.logout-btn {
+  margin-top: 30px;
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  padding: 14px 20px;
   width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
+  border-radius: 8px;
+  transition: background-color 0.3s ease, transform 0.2s ease;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 50%;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  cursor: pointer;
 }
 
-.avatar-upload-container .profile-avatar:hover .avatar-overlay {
-  opacity: 1;
+.logout-btn i {
+  margin-right: 10px;
 }
 
-.profile-details .q-item {
-  padding: 12px 0;
-  border-bottom: 1px solid #f0f0f0;
+.logout-btn:hover {
+  background-color: #d84332;
+  transform: translateY(-2px);
 }
 
-.q-btn {
-  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+.logout-btn:active {
+  transform: translateY(1px);
 }
 
-.q-btn:hover {
-  background-color: #1976d2;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
+@media (max-width: 767px) {
+  .profile-page {
+    margin: 20px;
+  }
 
-.q-btn-toggle .q-btn.selected {
-  background-color: #2196F3;
-  color: white;
-}
+  .profile-photo {
+    height: 20vh;
+  }
 
-.q-btn-toggle .q-btn {
-  border-radius: 8px;
-}
-
-.q-input {
-  font-size: 14px;
-  padding: 12px;
-  border-radius: 8px;
-  background-color: #f3f4f6;
-  transition: all 0.3s ease;
-}
-
-.q-input:focus {
-  border-color: #2196F3;
-}
-
-.bg-input-field {
-  background-color: #f9f9f9;
-}
-
-.bg-light-grey {
-  background-color: #f5f5f5;
-}
-
-.text-weight-bold {
-  font-weight: 600;
-}
-
-.q-card-actions {
-  padding: 16px;
-  background-color: #f9f9f9;
-}
-
-.bg-gradient-btn {
-  background: linear-gradient(135deg, #2196F3, #00bcd4);
-  color: white;
+  .content {
+    padding: 20px;
+  }
 }
 </style>

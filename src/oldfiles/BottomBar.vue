@@ -4,37 +4,44 @@
     <!-- Footer -->
     <q-footer class="footer bg-gradient" elevated>
       <q-tabs
-        align="justify"
+        align="center"
         dense
         class="tabs-container"
+        active-color="primary"
+        indicator-color="white"
       >
         <!-- Home -->
         <q-tab
           icon="home"
+          label="Home"
           class="tab-hover"
           @click="goToPage('/home')"
         />
 
         <!-- Icon -->
         <q-tab
-          icon="star"
+          icon="route"
+          label="History"
           class="tab-hover"
-          @click="goToPage('/icon')"
+          @click="goToPage('/history')"
+        />
+
+
+        <q-tab
+          icon="map"
+          label="Join"
+          class="tab-hover"
+          @click="goToPage('/join')"
         />
 
         <!-- Profile -->
         <q-tab
           icon="account_circle"
+          label="Profile"
           class="tab-hover"
           @click="goToPage('/profile')"
         />
 
-        <!-- Settings -->
-        <q-tab
-          icon="settings"
-          class="tab-hover"
-          @click="goToPage('/settings')"
-        />
       </q-tabs>
     </q-footer>
   </q-layout>
@@ -51,50 +58,55 @@ export default {
 </script>
 
 <style scoped>
-/* Layout and Header Styling */
-.q-header {
-  height: 60px;
-  background-color: #1e3c72; /* Customize header background */
-}
-
-.q-page-container {
-  background-color: #f0f0f0; /* Customize page background */
-}
-
 /* Footer Styling */
 .footer {
-  height: 60px;
-  background: linear-gradient(to right, #1e3c72, #2a5298);
+  height: 70px;
+  background: linear-gradient(#284fc3,#0a1a3d);
   color: white;
-  padding: 0 20px;
   display: flex;
   justify-content: center;
   align-items: center;
+  padding: 0 30px;
+  box-shadow: 0px -4px 15px rgba(0, 0, 0, 0.1); /* Soft shadow for footer */
 }
 
 /* Tabs Container */
 .tabs-container {
   width: 100%;
+  max-width: 500px; /* Prevent tabs from stretching too far */
   display: flex;
-  justify-content: space-around; /* Spaced evenly */
+  justify-content: space-between;
+  padding: 0 10px;
+  margin: 0 auto;
 }
 
 /* Individual Tab Styling */
 .q-tab {
-  font-size: 20px;
+  font-size: 16px; /* Adjusted font size for readability */
+  font-weight: bold; /* Bold the tab labels */
+  color: white; /* Default tab color */
+  padding: 8px 16px; /* Add padding for better hit area */
 }
 
 /* Hover Effects for Tabs */
 .tab-hover {
-  background: linear-gradient(to right, #0f4b6e, #0099cc);
   position: relative;
-  transition: transform 0.3s, z-index 0.3s;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  padding: 8px 16px;
+  border-radius: 10px; /* Rounded edges for a softer look */
 }
 
 .tab-hover:hover {
   transform: scale(1.1); /* Slightly enlarge on hover */
-  z-index: 10; /* Bring to front */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Optional: Add a shadow effect */
+  z-index: 10; /* Bring to the front */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Soft shadow on hover */
+  background: linear-gradient(135deg, #0f4b6e, #0099cc); /* Gradient for hover state */
+}
+
+/* Tab Indicator */
+.q-tabs__indicator {
+  background-color: white !important; /* White indicator for active tab */
+  height: 4px; /* Slightly thicker indicator */
+  border-radius: 2px; /* Rounded corners for the indicator */
 }
 </style>
-

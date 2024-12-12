@@ -3,16 +3,16 @@
     <div class="route-details">
       <div class="route-header">
         <span class="route-time">09:00 AM</span>
-        <span class="status-label completed">Completed</span>
+        <span class="status-label completed">Upcoming</span>
       </div>
       <div class="route-location">
         <div class="location from-to">
-          <q-icon name="location_on" class="location-icon" />
+          <q-icon name="location_on" class="location-icon" color="green" />
           <span>Dwarka</span>
         </div>
         <q-icon name="arrow_forward" class="arrow-icon" />
         <div class="location from-to">
-          <q-icon name="location_on" class="location-icon" />
+          <q-icon name="location_on" class="location-icon" color=""/>
           <span>Nehru Place</span>
         </div>
       </div>
@@ -23,7 +23,7 @@
 
     <q-btn
       class="join-button"
-      @click="joinRoute"
+      to="join"
       label="Join"
       color="white"
       rounded
@@ -34,10 +34,6 @@
 
 <script setup>
 import { QIcon, QBtn } from 'quasar';
-
-const joinRoute = () => {
-  alert('Joined Route 423 from Dwarka to Nehru Place!');
-};
 </script>
 
 <style scoped>
