@@ -5,25 +5,53 @@
         <div class="navbar-content">
           <div class="logo">
             <div class="logo-icon">
-              <!-- Updated Bus Icon with a better style -->
               <q-icon name="directions_bus" size="32px" class="bus-icon" />
             </div>
             <span class="logo-title">Driver Portal</span>
           </div>
 
           <div class="right-side">
-            <!-- Notification button using Quasar component -->
-            <q-btn round icon="notifications" @click="toggleNotifications" flat>
+            <!-- Notification button -->
+            <q-btn
+              round
+              icon="notifications"
+              @click="toggleNotifications"
+              flat
+              class="notification-btn"
+            >
               <q-badge floating color="red" label="" v-if="hasUnreadNotifications" />
             </q-btn>
 
+            <!-- Notifications Dialog -->
+            <q-dialog v-model="isNotificationsDialogOpen" persistent transition-show="scale" transition-hide="scale">
+              <q-card class="notification-card">
+                <q-card-section class="q-pt-none">
+                  <div class="text-h6">Notifications</div>
+                </q-card-section>
+                <q-list>
+                  <q-item v-for="(notification, index) in notifications" :key="index">
+                    <q-item-section avatar>
+                      <q-icon name="event_note" size="24px" class="notification-icon" />
+                    </q-item-section>
+                    <q-item-section>
+                      <p class="q-mb-xs">{{ notification.message }}</p>
+                      <p class="text-caption text-grey-6">{{ notification.timestamp }}</p>
+                    </q-item-section>
+                  </q-item>
+                </q-list>
+                <q-card-actions align="right">
+                  <q-btn flat label="Close" color="primary" @click="closeNotifications" />
+                </q-card-actions>
+              </q-card>
+            </q-dialog>
+
+            <!-- Profile dropdown -->
             <div class="profile-dropdown">
               <div class="profile-info">
                 <p class="profile-name">XYZABC</p>
                 <p class="profile-id">Driver #4872</p>
               </div>
 
-              <!-- Profile avatar using Quasar component -->
               <q-avatar size="40px" class="cursor-pointer" @click="toggleProfileMenu">
                 <img
                   src="https://images.unsplash.com/photo-1633332755192-727a05c4013d?w=400"
@@ -31,7 +59,6 @@
                 />
               </q-avatar>
 
-              <!-- Profile menu using Quasar components -->
               <q-menu v-model="isProfileMenuOpen" cover auto-close>
                 <q-list>
                   <q-item>
@@ -53,7 +80,6 @@
       </div>
     </q-header>
 
-    <!-- Side menu using Quasar component -->
     <q-drawer v-model="isMenuOpen" side="left" overlay bordered>
       <q-list>
         <q-item clickable @click="goHome">
@@ -80,14 +106,34 @@ import { ref } from 'vue';
 const hasUnreadNotifications = ref(true);
 const isProfileMenuOpen = ref(false);
 const isMenuOpen = ref(false);
+const isNotificationsDialogOpen = ref(false);
+
+const notifications = ref([
+  {
+    message: "New route assignment: Route 42, Sector 15 to Sector 28.",
+    timestamp: "2024-12-12 08:00 AM",
+  },
+  {
+    message: "Maintenance reminder: Engine check required for Bus #4872.",
+    timestamp: "2024-12-11 06:00 PM",
+  },
+  {
+    message: "Weather alert: Heavy rainfall expected between 8 AM to 10 AM.",
+    timestamp: "2024-12-12 07:30 AM",
+  },
+  {
+    message: "Schedule update: Break time extended by 30 minutes.",
+    timestamp: "2024-12-12 07:00 AM",
+  },
+]);
 
 const toggleNotifications = () => {
-  hasUnreadNotifications.value = !hasUnreadNotifications.value;
-  if (hasUnreadNotifications.value) {
-    alert('You have new notifications!');
-  } else {
-    alert('All notifications are read.');
-  }
+  isNotificationsDialogOpen.value = !isNotificationsDialogOpen.value;
+};
+
+const closeNotifications = () => {
+  isNotificationsDialogOpen.value = false;
+  hasUnreadNotifications.value = false; // Mark notifications as read
 };
 
 const toggleProfileMenu = () => {
@@ -108,22 +154,19 @@ const goProfile = () => {
 </script>
 
 <style scoped>
-
 .navbar {
-  background: linear-gradient(#0a1a3d, #284fc3);
+  background: linear-gradient(145deg, #1d2b64, #284fc3);
   color: white;
-  box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px, rgba(0, 0, 0, 0.1) 0px 1px 3px;
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 10px, rgba(0, 0, 0, 0.1) 0px 1px 6px;
   margin-bottom: 0;
   transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
-
 .container {
-  max-width: 7xl;
+  max-width: 1200px;
   margin: 0 auto;
   padding: 0 1rem;
 }
-
 
 .navbar-content {
   display: flex;
@@ -133,12 +176,10 @@ const goProfile = () => {
   flex-wrap: wrap;
 }
 
-
 .logo {
   display: flex;
   align-items: center;
   gap: 1rem;
-
 }
 
 .logo-icon {
@@ -162,7 +203,6 @@ const goProfile = () => {
 .bus-icon:hover {
   color: #ffeb3b;
 }
-
 
 .logo-title {
   font-weight: bold;
@@ -205,7 +245,6 @@ const goProfile = () => {
   margin: 0;
 }
 
-
 /* Profile dropdown */
 .profile-dropdown {
   display: flex;
@@ -244,41 +283,18 @@ const goProfile = () => {
   box-shadow: rgba(0, 0, 0, 0.2) 0px 2px 5px;
 }
 
-/* Profile menu */
-.profile-menu {
-  position: absolute;
-  top: 100%;
-  right: 0;
-  background-color: white;
-  color: black;
+/* Notification card styling */
+.notification-card {
+  min-width: 300px;
+  max-width: 400px;
+  border-radius: 12px;
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 10px 20px;
+  background-color: #fff;
   padding: 1rem;
-  border-radius: 0.375rem;
-  box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px, rgba(0, 0, 0, 0.1) 0px 1px 3px;
-  width: 10rem;
 }
 
-/* Side menu */
-.side-menu {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 250px;
-  height: 100%;
-  background-color: #1e3a8a;
-  padding: 2rem 1rem;
-  box-shadow: 2px 0px 5px rgba(0, 0, 0, 0.1);
-  z-index: 10;
-}
-
-.side-menu q-item {
-  padding: 0.8rem;
-  border-radius: 8px;
-  transition: background-color 0.3s ease, transform 0.3s ease;
-}
-
-.side-menu q-item:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-  transform: translateX(5px);
+.notification-icon {
+  color: #3b82f6;
 }
 
 /* Mobile responsiveness */
@@ -296,11 +312,6 @@ const goProfile = () => {
   .navbar-content {
     display: flex;
     flex-direction: column;
-  }
-
-  .custom-btn {
-    font-size: 1rem;
-    padding: 10px 20px;
   }
 
   .side-menu {

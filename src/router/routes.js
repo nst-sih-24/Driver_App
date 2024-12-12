@@ -6,6 +6,7 @@ const routes = [
       { path: 'home', component: () => import('src/oldfiles/HomePage.vue') },
       { path: 'profile', component: () => import('src/oldfiles/ProfilePage.vue') },
       { path: 'join', component: () => import('src/oldfiles/JoinPage.vue') },
+      { path: 'join_conductor', component: () => import('src/oldfiles/JoinPage_Conductor.vue') },
       { path: 'feedback', component: () => import('src/oldfiles/FeedbackPage.vue') },
       { path: 'nav', component: () => import('src/oldfiles/NavBar.vue') },
       { path: 'nav_conductor', component: () => import('src/oldfiles/NavBar_Conductor.vue') },

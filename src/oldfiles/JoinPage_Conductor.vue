@@ -5,22 +5,14 @@
     <div class="map-container">
       <!-- Google Map Implementation -->
       <div class="map-placeholder">
-        <GoogleMap
-          api-key="AIzaSyCX7YZQFXhOtlyC-El4uG9baq4qSY68MZg"
-          style="width: 100%; height: 490px"
-          :center="center"
-          :zoom="12"
-        >
+        <GoogleMap api-key="AIzaSyCX7YZQFXhOtlyC-El4uG9baq4qSY68MZg" style="width: 100%; height: 490px" :center="center"
+          :zoom="12">
           <!-- Marker for Source (New Delhi Railway Station) -->
           <Marker :position="center" :options="{ title: 'New Delhi Railway Station' }" />
 
           <!-- Markers for each stop -->
-          <Marker
-            v-for="(stop, index) in stops"
-            :key="index"
-            :position="stop.position"
-            :options="{ title: stop.name }"
-          />
+          <Marker v-for="(stop, index) in stops" :key="index" :position="stop.position"
+            :options="{ title: stop.name }" />
 
           <!-- Marker for Destination (West End Terminal) -->
           <Marker :position="destination" :options="{ title: 'West End Terminal' }" />
@@ -48,13 +40,8 @@
         <q-card-section class="q-px-l q-py-md bg-grey-1 route-section">
           <q-timeline color="primary" layout="vertical">
             <!-- Source (clickable) -->
-            <q-timeline-entry
-              side="left"
-              icon="home"
-              color="red"
-              class="cursor-pointer timeline-entry"
-              @click="toggleStops"
-            >
+            <q-timeline-entry side="left" icon="home" color="red" class="cursor-pointer timeline-entry"
+              @click="toggleStops">
               <div class="stop-name-container">
                 <div class="stop-name">New Delhi Railway Station</div>
               </div>
@@ -63,14 +50,8 @@
             <!-- Intermediate Stops -->
             <transition name="fade">
               <div v-if="showStops">
-                <q-timeline-entry
-                  v-for="(stop, index) in stops"
-                  :key="index"
-                  side="left"
-                  icon="location_on"
-                  color="secondary"
-                  class="timeline-entry"
-                >
+                <q-timeline-entry v-for="(stop, index) in stops" :key="index" side="left" icon="location_on"
+                  color="secondary" class="timeline-entry">
                   <div class="stop-name-container">
                     <div class="stop-name">{{ stop.name }}</div>
                   </div>
@@ -79,89 +60,119 @@
             </transition>
 
             <!-- Destination (clickable) -->
-            <q-timeline-entry
-              side="left"
-              icon="flag"
-              color="green"
-              class="cursor-pointer timeline-entry"
-              @click="toggleStops"
-            >
+            <q-timeline-entry side="left" icon="flag" color="green" class="cursor-pointer timeline-entry"
+              @click="toggleStops">
               <div class="stop-name-container">
                 <div class="stop-name">West End Terminal</div>
               </div>
             </q-timeline-entry>
           </q-timeline>
         </q-card-section>
-
-        <!-- Verify Tickets Button -->
-        <q-card-section class="q-px-xl q-py-md verify-section">
-          <q-btn
-            color="blue"
-            icon="qr_code_scanner"
-            label="Verify Tickets"
-            @click="verifyTickets"
-            class="full-width"
-          />
-        </q-card-section>
       </q-card>
 
       <!-- SOS Floating Button (bottom right corner) -->
       <div v-if="showSOS" class="sos-floating-button">
-        <q-btn
-          round
-          size="lg"
-          color="red"
-          text-color="white"
-          icon="warning"
-          @click="handleSOS"
-        />
+        <q-btn round size="lg" color="red" text-color="white" icon="warning" @click="handleSOS" />
+
+        <!-- Verify -->
+
+        <q-page-sticky position="bottom-left" :offset="[18, 18]">
+          <q-btn fab icon="qr_code_scanner" color="primary" no-caps @click="startScan">
+            <span class="q-mx-sm">Scan</span>
+          </q-btn>
+        </q-page-sticky>
+
+        <q-dialog v-model="showScanner">
+          <q-card>
+            <q-inner-loading :showing="loading">
+              <q-spinner-gears size="50px" color="primary" />
+            </q-inner-loading>
+            <qrcode-stream @decode="onDecode" @init="onInit"></qrcode-stream>
+          </q-card>
+        </q-dialog>
+
       </div>
     </div>
   </div>
 </template>
-
 <script setup>
-import { ref } from "vue";
-import { GoogleMap, Marker, Polyline } from 'vue3-google-map'
+import { ref } from 'vue';
+import { QrcodeStream } from 'vue3-qrcode-reader';
+import { GoogleMap, Marker, Polyline } from 'vue3-google-map';
 
-// Center of the map (New Delhi Railway Station)
-const center = { lat: 28.6128, lng: 77.2295 }
-// Destination coordinates (West End Terminal)
-const destination = { lat: 28.7041, lng: 77.1025 }
+// Google Map Data
+const center = { lat: 28.6128, lng: 77.2295 };  // Center of the map (New Delhi Railway Station)
+const destination = { lat: 28.7041, lng: 77.1025 };  // Destination coordinates (West End Terminal)
 
-// Intermediate stops with coordinates (actual locations in Delhi)
 const stops = ref([
-  { name: "City Park", position: { lat: 28.6300, lng: 77.2098 } },       // City Park
-  { name: "India Gate", position: { lat: 28.6128, lng: 77.2295 } },        // India Gate
-  { name: "Connaught Place", position: { lat: 28.6355, lng: 77.2216 } }    // Connaught Place
+  { name: "City Park", position: { lat: 28.6300, lng: 77.2098 } },  // City Park
+  { name: "India Gate", position: { lat: 28.6128, lng: 77.2295 } },  // India Gate
+  { name: "Connaught Place", position: { lat: 28.6355, lng: 77.2216 } }  // Connaught Place
 ]);
 
-// The path for the polyline
 const routePath = ref([
   center,
   ...stops.value.map(stop => stop.position),
   destination
 ]);
 
-const showStops = ref(false);
+const showStops = ref(false);  // Toggle to show/hide stops on the map
+const showSOS = ref(true);     // Toggle to show/hide SOS button
 
-// Toggle to show/hide SOS button. Set to true if you want to show it.
-const showSOS = ref(true);
+// QR Scanner State
+const showScanner = ref(false); // Initially hide the scanner
+const errorMessage = ref(null);
+const loading = ref(false);
 
+// Method to toggle stops visibility on map
 function toggleStops() {
   showStops.value = !showStops.value;
 }
 
-// Action when SOS is clicked (to be implemented as needed)
+// Method for SOS button click action
 function handleSOS() {
   alert("SOS button clicked! Implement the desired SOS action here.");
 }
 
-// // Action for verifying tickets (QR scanning logic goes here)
-// function verifyTickets() {
-//   alert("Initiating ticket verification (QR code scanning). Implement logic here.");
-// }
+// Start scanning when the button is clicked
+function startScan() {
+  showScanner.value = true;
+}
+
+// Action when QR code is decoded
+const onDecode = (content) => {
+  showScanner.value = false;
+  console.log(content);
+};
+
+// Initialization of QR scanner (if needed)
+const onInit = (promise) => {
+  loading.value = true;
+  promise
+    .then(() => {
+      console.info('Successfully initialized! Ready for scanning now!');
+      loading.value = false;
+    })
+    .catch((error) => {
+      if (error.name === 'NotAllowedError') {
+        errorMessage.value = 'Hey! I need access to your camera';
+      } else if (error.name === 'NotFoundError') {
+        errorMessage.value = 'Do you even have a camera on your device?';
+      } else if (error.name === 'NotSupportedError') {
+        errorMessage.value = 'Seems like this page is served in non-secure context (HTTPS, localhost or file://)';
+      } else if (error.name === 'NotReadableError') {
+        errorMessage.value = "Couldn't access your camera. Is it already in use?";
+      } else if (error.name === 'OverconstrainedError') {
+        errorMessage.value = "Constraints don't match any installed camera. Did you ask for the front camera although there is none?";
+      } else {
+        errorMessage.value = 'UNKNOWN ERROR: ' + error.message;
+      }
+
+      loading.value = false;
+    });
+};
 </script>
+
 
 <style scoped>
 .fullscreen {
@@ -272,7 +283,7 @@ function handleSOS() {
   border-radius: 6px;
   padding: 8px 12px;
   border: 1px solid #eee;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .stop-name {
@@ -287,6 +298,7 @@ function handleSOS() {
 .fade-leave-active {
   transition: opacity 0.2s;
 }
+
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
@@ -296,6 +308,7 @@ function handleSOS() {
 .text-body2 {
   font-size: 0.9rem;
 }
+
 .text-sm {
   font-size: 0.9rem;
   line-height: 1.4;
