@@ -5,22 +5,14 @@
     <div class="map-container">
       <!-- Google Map Implementation -->
       <div class="map-placeholder">
-        <GoogleMap
-          api-key="AIzaSyCX7YZQFXhOtlyC-El4uG9baq4qSY68MZg"
-          style="width: 100%; height: 490px"
-          :center="center"
-          :zoom="12"
-        >
+        <GoogleMap api-key="AIzaSyCX7YZQFXhOtlyC-El4uG9baq4qSY68MZg" style="width: 100%; height: 490px" :center="center"
+          :zoom="12">
           <!-- Marker for Source (New Delhi Railway Station) -->
           <Marker :position="center" :options="{ title: 'New Delhi Railway Station' }" />
 
           <!-- Markers for each stop -->
-          <Marker
-            v-for="(stop, index) in stops"
-            :key="index"
-            :position="stop.position"
-            :options="{ title: stop.name }"
-          />
+          <Marker v-for="(stop, index) in stops" :key="index" :position="stop.position"
+            :options="{ title: stop.name }" />
 
           <!-- Marker for Destination (West End Terminal) -->
           <Marker :position="destination" :options="{ title: 'West End Terminal' }" />
@@ -48,13 +40,8 @@
         <q-card-section class="q-px-l q-py-md bg-grey-1 route-section">
           <q-timeline color="primary" layout="vertical">
             <!-- Source (clickable) -->
-            <q-timeline-entry
-              side="left"
-              icon="home"
-              color="red"
-              class="cursor-pointer timeline-entry"
-              @click="toggleStops"
-            >
+            <q-timeline-entry side="left" icon="home" color="red" class="cursor-pointer timeline-entry"
+              @click="toggleStops">
               <div class="stop-name-container">
                 <div class="stop-name">New Delhi Railway Station</div>
               </div>
@@ -63,14 +50,8 @@
             <!-- Intermediate Stops -->
             <transition name="fade">
               <div v-if="showStops">
-                <q-timeline-entry
-                  v-for="(stop, index) in stops"
-                  :key="index"
-                  side="left"
-                  icon="location_on"
-                  color="secondary"
-                  class="timeline-entry"
-                >
+                <q-timeline-entry v-for="(stop, index) in stops" :key="index" side="left" icon="location_on"
+                  color="secondary" class="timeline-entry">
                   <div class="stop-name-container">
                     <div class="stop-name">{{ stop.name }}</div>
                   </div>
@@ -79,13 +60,8 @@
             </transition>
 
             <!-- Destination (clickable) -->
-            <q-timeline-entry
-              side="left"
-              icon="flag"
-              color="green"
-              class="cursor-pointer timeline-entry"
-              @click="toggleStops"
-            >
+            <q-timeline-entry side="left" icon="flag" color="green" class="cursor-pointer timeline-entry"
+              @click="toggleStops">
               <div class="stop-name-container">
                 <div class="stop-name">West End Terminal</div>
               </div>
@@ -94,16 +70,14 @@
         </q-card-section>
       </q-card>
 
+      <div>
+        <!-- Floating Back Button -->
+        <q-btn round icon="close" color="primary" @click="goBack" class="floating-btn" />
+      </div>
+
       <!-- SOS Floating Button (bottom right corner) -->
       <div v-if="showSOS" class="sos-floating-button">
-        <q-btn
-          round
-          size="lg"
-          color="red"
-          text-color="white"
-          icon="warning"
-          @click="handleSOS"
-        />
+        <q-btn round size="lg" color="red" text-color="white" icon="warning" @click="handleSOS" />
       </div>
     </div>
   </div>
@@ -146,10 +120,10 @@ function handleSOS() {
   alert("SOS button clicked! Implement the desired SOS action here.");
 }
 
-// // Action for verifying tickets (QR scanning logic goes here)
-// function verifyTickets() {
-//   alert("Initiating ticket verification (QR code scanning). Implement logic here.");
-// }
+// Back navigation function (to navigate back in browser history)
+function goBack() {
+  window.history.back();
+}
 </script>
 
 <style scoped>
@@ -261,7 +235,7 @@ function handleSOS() {
   border-radius: 6px;
   padding: 8px 12px;
   border: 1px solid #eee;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .stop-name {
@@ -276,6 +250,7 @@ function handleSOS() {
 .fade-leave-active {
   transition: opacity 0.2s;
 }
+
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
@@ -285,6 +260,7 @@ function handleSOS() {
 .text-body2 {
   font-size: 0.9rem;
 }
+
 .text-sm {
   font-size: 0.9rem;
   line-height: 1.4;
@@ -295,6 +271,14 @@ function handleSOS() {
   border-top: 1px solid #ddd;
   margin-top: 16px;
   padding-top: 20px;
+}
+
+.floating-btn {
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  z-index: 1000;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
 }
 
 /* SOS Button Styling */
