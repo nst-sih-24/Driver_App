@@ -91,7 +91,7 @@
             />
 
             <!-- Loading Spinner -->
-            <q-spinner-bubbles v-if="loading" color="primary" size="30px" class="q-mt-md" />
+            <q-spinner bubbles v-if="loading" color="primary" size="30px" class="q-mt-md" />
           </q-form>
         </q-card>
 

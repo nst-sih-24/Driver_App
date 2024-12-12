@@ -8,7 +8,6 @@ const routes = [
       { path: 'roni', component: () => import('src/oldfiles/ProfilePage.vue') },
       { path: 'join', component: () => import('src/oldfiles/NextPage.vue') },
       { path: 'feedback', component: () => import('src/oldfiles/FeedbackPage.vue') },
-      { path: 'feedback', component: () => import('src/oldfiles/.vue') },
       { path: 'krushn', component: () => import('src/oldfiles/MorePage.vue') }
 
     ]

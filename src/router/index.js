@@ -1,6 +1,8 @@
 import { defineRouter } from '#q-app/wrappers'
 import { createRouter, createMemoryHistory, createWebHistory, createWebHashHistory } from 'vue-router'
 import routes from './routes'
+import { init } from "src/boot/supabase";
+
 
 /*
  * If not building with SSR mode, you can
@@ -11,7 +13,12 @@ import routes from './routes'
  * with the Router instance.
  */
 
-export default defineRouter(function (/* { store, ssrContext } */) {
+export default defineRouter(async function (/* { store, ssrContext } */) {
+  try {
+    await init();
+  } catch (error) {
+    console.error("Error initializing Supabase", error);
+  }
   const createHistory = process.env.SERVER
     ? createMemoryHistory
     : (process.env.VUE_ROUTER_MODE === 'history' ? createWebHistory : createWebHashHistory)
