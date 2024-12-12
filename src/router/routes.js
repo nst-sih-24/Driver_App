@@ -12,8 +12,7 @@ const routes = [
       { path: 'nav_conductor', component: () => import('src/oldfiles/NavBar_Conductor.vue') },
       { path: 'yuvraj', component: () => import('src/oldfiles/Yuvraj_Page.vue') },
       { path: 'history', component: () => import('src/oldfiles/HistoryPage.vue') },
-      { path: 'help', component: () => import('src/oldfiles/HelpPage.vue') },
-      { path: 'krushn', component: () => import('src/oldfiles/MorePage.vue') },
+      { path: 'help', component: () => import('src/oldfiles/HelpPage.vue') }
     ],
   },
 
