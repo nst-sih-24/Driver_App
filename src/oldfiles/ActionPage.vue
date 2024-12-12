@@ -1,42 +1,41 @@
 <template>
   <q-page-container>
-
-  <q-card class="route-card">
-    <div class="route-details">
-      <div class="route-header">
-        <span class="route-time">09:00 AM</span>
-        <span class="status-label completed">Upcoming</span>
-      </div>
-      <div class="route-location">
-        <div class="location from-to">
-          <q-icon name="location_on" class="location-icon" color="green" />
-          <span>Dwarka</span>
+    <q-card class="route-card">
+      <div class="route-details">
+        <div class="route-header">
+          <span class="route-time">09:00 AM</span>
+          <span class="status-label completed">Upcoming</span>
         </div>
-        <q-icon name="arrow_forward" class="arrow-icon" />
-        <div class="location from-to">
-          <q-icon name="location_on" class="location-icon" color=""/>
-          <span>Nehru Place</span>
+        <div class="route-location">
+          <div class="location from-to">
+            <q-icon name="location_on" class="location-icon" color="green" />
+            <span>Dwarka</span>
+          </div>
+          <q-icon name="arrow_forward" class="arrow-icon" />
+          <div class="location from-to">
+            <q-icon name="location_on" class="location-icon" color="" />
+            <span>Nehru Place</span>
+          </div>
         </div>
+        <div class="route-info">Route 423 • 32 stops completed</div>
       </div>
-      <div class="route-info">
-        Route 423 • 32 stops completed
-      </div>
-    </div>
 
-    <q-btn
-      class="join-button"
-      to="/driver-join-page"
-      label="Join"
-      color="white"
-      rounded
-      flat
-    />
-  </q-card>
-</q-page-container>
+      <q-btn class="join-button" to="/driver-join-page" label="Join" color="white" rounded flat />
+
+      <q-btn
+        class="q-mt-md "
+        tag="a"
+        href="/imagerecognition.html"
+        label="Mark Attendance"
+        color="green"
+        rounded
+      />
+    </q-card>
+  </q-page-container>
 </template>
 
 <script setup>
-import { QIcon, QBtn } from 'quasar';
+import { QIcon, QBtn } from 'quasar'
 </script>
 
 <style scoped>
@@ -56,7 +55,10 @@ import { QIcon, QBtn } from 'quasar';
   flex-direction: column;
   justify-content: space-between;
   width: 100%;
-  transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease,
+    background-color 0.3s ease;
   overflow: hidden;
 }
 
@@ -79,18 +81,18 @@ import { QIcon, QBtn } from 'quasar';
 
 .route-time {
   font-size: 1.5rem; /* Larger font size for emphasis */
-  font-weight: 600;  /* Bold for prominence */
-  color: #2563eb;   /* Highlighting with a distinct blue */
+  font-weight: 600; /* Bold for prominence */
+  color: #2563eb; /* Highlighting with a distinct blue */
   text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1); /* Light text shadow for emphasis */
 }
 
 .status-label {
   padding: 0.5rem 1.25rem;
   border-radius: 9999px;
-  font-size: 1.1rem;  /* Slightly larger for clarity */
+  font-size: 1.1rem; /* Slightly larger for clarity */
   font-weight: 500;
-  background-color: #d1fae5;  /* Soft green background */
-  color: #10b981;    /* Green text to signify success/completion */
+  background-color: #d1fae5; /* Soft green background */
+  color: #10b981; /* Green text to signify success/completion */
   text-transform: capitalize;
   box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1); /* Light shadow inside the label */
 }
@@ -105,7 +107,7 @@ import { QIcon, QBtn } from 'quasar';
 .location {
   display: flex;
   align-items: center;
-  font-size: 1.125rem;  /* Larger font size for easy reading */
+  font-size: 1.125rem; /* Larger font size for easy reading */
 }
 
 .from-to {
@@ -116,13 +118,13 @@ import { QIcon, QBtn } from 'quasar';
 .location-icon {
   height: 1.3rem;
   width: 1.3rem;
-  color: #2563eb;  /* Blue icons for location */
+  color: #2563eb; /* Blue icons for location */
 }
 
 .arrow-icon {
   height: 1.25rem;
   width: 1.25rem;
-  color: #6b7280;  /* Gray color for arrow icon */
+  color: #6b7280; /* Gray color for arrow icon */
 }
 
 .route-info {
@@ -144,13 +146,16 @@ import { QIcon, QBtn } from 'quasar';
   border-radius: 9999px;
   border: none;
   cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    background-color 0.3s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
   z-index: 2;
 }
 
 .join-button:hover {
   background-color: #1d4ed8; /* Darker blue for hover */
-  transform: scale(1.05);  /* Slight scale effect on hover */
+  transform: scale(1.05); /* Slight scale effect on hover */
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Adding subtle shadow on hover */
 }
 
@@ -183,7 +188,7 @@ import { QIcon, QBtn } from 'quasar';
   }
 
   .route-time {
-    font-size: 1.2rem;  /* Slightly smaller for mobile */
+    font-size: 1.2rem; /* Slightly smaller for mobile */
   }
 
   .route-location {
@@ -198,11 +203,11 @@ import { QIcon, QBtn } from 'quasar';
   }
 
   .location {
-    font-size: 1rem;  /* Adjust font size for better readability on mobile */
+    font-size: 1rem; /* Adjust font size for better readability on mobile */
   }
 
   .arrow-icon {
-    display: inline-block;  /* Make the arrow visible on mobile */
+    display: inline-block; /* Make the arrow visible on mobile */
   }
 
   .status-label {
