@@ -13,6 +13,8 @@ const routes = [
       { path: 'yuvraj', component: () => import('src/oldfiles/Yuvraj_Page.vue') },
       { path: 'history', component: () => import('src/oldfiles/HistoryPage.vue') },
       { path: 'help', component: () => import('src/oldfiles/HelpPage.vue') },
+      { path: 'src', component: () => import('src/oldfiles/HELlPage.vue') },
+
 
 
 
