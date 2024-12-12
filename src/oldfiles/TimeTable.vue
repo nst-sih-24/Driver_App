@@ -19,80 +19,76 @@
     </div>
 
     <div class="route-list">
-      <q-card
-        v-for="(route, index) in filteredRoutes"
-        :key="index"
-        class="route-card"
-      >
-        <div class="route-details">
-          <div class="route-header">
-            <span class="route-time">{{ route.time }}</span>
-            <span
-              :class="[
-                'status-label',
-                {
-                  completed: route.status === 'Completed',
-                  inProgress: route.status === 'In Progress',
-                  upcoming: route.status === 'Upcoming',
-                },
-              ]"
-            >
-              {{ route.status }}
-            </span>
-          </div>
-          <div class="route-location">
-            <div class="location from-to">
-              <q-icon name="location_on" class="location-icon" />
-              <span>{{ route.from }}</span>
-            </div>
-            <q-icon name="arrow_forward" class="arrow-icon" />
-            <div class="location from-to">
-              <q-icon name="location_on" class="location-icon" />
-              <span>{{ route.to }}</span>
-            </div>
-          </div>
-          <div class="route-info">
-            {{ route.route }} •
-            {{ route.status === 'Completed' ? '32 stops completed' : '45 min estimated' }}
-          </div>
-        </div>
-
-        <q-btn
-          class="join-button"
-          
-          @click="joinRoute(route)"
-          label="Join"
-          color="white"
-          rounded
-          flat
-        />
-      </q-card>
+      <TripCard v-for="(trip, index) in trips" :key="index" :trip="trip" />
     </div>
   </q-card>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
-import { QIcon, QBtn, QCard } from 'quasar';
+import { ref, /*computed,*/ onMounted } from 'vue'
+import { supabase } from 'src/boot/supabase.js'
 
-const activeTab = ref('today');
+import TripCard from 'components/TripCard.vue'
 
-const routes = [
-  { time: '09:00 AM', route: 'Route 423', from: 'Dwarka', to: 'Nehru Place', status: 'Completed' },
-  { time: '11:30 AM', route: 'Route 340', from: 'Nehru Place', to: 'Karol Bagh', status: 'In Progress' },
-  { time: '14:00 PM', route: 'Route 423', from: 'Karol Bagh', to: 'Dwarka', status: 'Upcoming' },
-  { time: '16:30 PM', route: 'Route 340', from: 'Dwarka', to: 'Nehru Place', status: 'Upcoming' },
-];
+const activeTab = ref('today')
 
-const filteredRoutes = computed(() => {
-  return routes.filter(() => {
-    return activeTab.value === 'today' || activeTab.value === 'tomorrow';
-  });
-});
+// const routes = [
+//   { time: '09:00 AM', route: 'Route 423', from: 'Dwarka', to: 'Nehru Place', status: 'Completed' },
+//   {
+//     time: '11:30 AM',
+//     route: 'Route 340',
+//     from: 'Nehru Place',
+//     to: 'Karol Bagh',
+//     status: 'In Progress',
+//   },
+//   { time: '14:00 PM', route: 'Route 423', from: 'Karol Bagh', to: 'Dwarka', status: 'Upcoming' },
+//   { time: '16:30 PM', route: 'Route 340', from: 'Dwarka', to: 'Nehru Place', status: 'Upcoming' },
+// ]
 
-const joinRoute = (route) => {
-  alert(`Joined ${route.route} from ${route.from} to ${route.to}!`);
-};
+const trips = ref([])
+
+const fetchTrips = async () => {
+  try {
+    const { data, error } = await supabase
+      .from('trip') // Replace 'trips' with your actual table name
+      .select('*') // Select only necessary fields
+      .order('expected_start_time', { ascending: true })
+
+    if (error) throw error
+
+    trips.value = data
+  } catch (err) {
+    console.error('Error fetching trips:', err.message)
+  }
+}
+
+// const fetchRoutes = async () => {
+//   try {
+//     const { data, error } = await supabase
+//       .from('route') // Replace 'routes' with your actual table name
+//       .select('time, route, from, to, status') // Select only necessary fields
+
+//     if (error) throw error
+
+//     routes.value = data
+//   } catch (err) {
+//     console.error('Error fetching routes:', err.message)
+//   }
+// }
+
+// const filteredRoutes = computed(() => {
+//   return routes.filter(() => {
+//     return activeTab.value === 'today' || activeTab.value === 'tomorrow'
+//   })
+// })
+
+// const joinRoute = (route) => {
+//   alert(`Joined ${route.route} from ${route.from} to ${route.to}!`)
+// }
+onMounted(() => {
+  // fetchRoutes()
+  fetchTrips()
+})
 </script>
 
 <style scoped>
@@ -143,7 +139,9 @@ const joinRoute = (route) => {
   border-radius: 0.75rem;
   font-size: 1rem;
   font-weight: 400;
-  transition: background-color 0.3s, color 0.3s;
+  transition:
+    background-color 0.3s,
+    color 0.3s;
   color: #1f2937;
 }
 
@@ -172,7 +170,10 @@ const joinRoute = (route) => {
   padding: 1.25rem;
   background-color: white;
   border: 1px solid #e5e7eb;
-  transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease,
+    background-color 0.3s ease;
   cursor: pointer;
   margin-bottom: 2rem;
   display: flex;
@@ -183,7 +184,8 @@ const joinRoute = (route) => {
 }
 
 .route-card:hover {
-  transform: translateY(-8px); /* Smooth floating effect */
+  transform: translateY(-8px);
+  /* Smooth floating effect */
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
 }
 
@@ -214,7 +216,9 @@ const joinRoute = (route) => {
   text-transform: capitalize;
   color: #10b981;
   background-color: #d1fae5;
-  transition: background-color 0.3s, color 0.3s;
+  transition:
+    background-color 0.3s,
+    color 0.3s;
 }
 
 .completed {

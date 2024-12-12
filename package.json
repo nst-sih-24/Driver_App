@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@quasar/extras": "^1.16.4",
+    "@supabase/supabase-js": "^2.47.5",
     "axios": "^1.2.1",
     "draggable": "^4.2.0",
     "pinia": "^2.0.11",
