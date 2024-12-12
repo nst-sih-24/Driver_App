@@ -1,10 +1,5 @@
+History
 <template>
-  <q-layout view="lHh Lpr lFf">
-    <!-- Header -->
-    <q-header class="header-container" elevated>
-
-    </q-header>
-
     <q-page-container>
       <q-page class="page-background q-px-sm q-pt-xl q-pb-lg">
         <div class="history-page">
@@ -34,7 +29,6 @@
         </div>
       </q-page>
     </q-page-container>
-  </q-layout>
 </template>
 
 <script>

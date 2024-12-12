@@ -1,13 +1,5 @@
+Profile
 <template>
-  <q-layout view="lHh Lpr lFf">
-    <!-- Header -->
-    <q-header class="header-container" elevated>
-      <div class="header-logo">
-        <i class="fas fa-bus-alt logo-icon"></i>
-        <span class="logo-text">NAV SMART</span>
-      </div>
-    </q-header>
-
     <q-page-container>
       <q-page class="page-background q-px-sm q-pt-xl q-pb-lg">
         <div class="profile-page">
@@ -77,7 +69,6 @@
         </div>
       </q-page>
     </q-page-container>
-  </q-layout>
 </template>
 
 <script>

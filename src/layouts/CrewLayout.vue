@@ -23,7 +23,12 @@
             </q-btn>
 
             <!-- Notifications Dialog -->
-            <q-dialog v-model="isNotificationsDialogOpen" persistent transition-show="scale" transition-hide="scale">
+            <q-dialog
+              v-model="isNotificationsDialogOpen"
+              persistent
+              transition-show="scale"
+              transition-hide="scale"
+            >
               <q-card class="notification-card">
                 <q-card-section class="q-pt-none">
                   <div class="text-h6">Notifications</div>
@@ -107,102 +112,78 @@
         active-color="primary"
         indicator-color="white"
       >
-        <!-- Home -->
-        <q-tab
-          icon="home"
-          label="Home"
-          class="tab-hover"
-          to="/"
-        />
-
-        <!-- Icon -->
-        <q-tab
-          icon="route"
-          label="History"
-          class="tab-hover"
-          to="history"
-        />
-
-
-        <q-tab
-          icon="map"
-          label="Join"
-          class="tab-hover"
-          to="driver-join-page"
-        />
-
-        <!-- Profile -->
-        <q-tab
-          icon="account_circle"
-          label="Profile"
-          class="tab-hover"
-          to="profile-page"
-        />
+        <q-route-tab icon="home" class="tab-hover" to="/" />
+        <q-route-tab icon="history" class="tab-hover" to="/history" />
+        <q-route-tab icon="person" class="tab-hover" to="/profile-page" />
       </q-tabs>
     </q-footer>
   </q-layout>
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref } from 'vue'
 
-const hasUnreadNotifications = ref(true);
-const isProfileMenuOpen = ref(false);
-const isMenuOpen = ref(false);
-const isNotificationsDialogOpen = ref(false);
+const hasUnreadNotifications = ref(true)
+const isProfileMenuOpen = ref(false)
+const isMenuOpen = ref(false)
+const isNotificationsDialogOpen = ref(false)
 
 const notifications = ref([
   {
-    message: "New route assignment: Route 42, Sector 15 to Sector 28.",
-    timestamp: "2024-12-12 08:00 AM",
+    message: 'New route assignment: Route 42, Sector 15 to Sector 28.',
+    timestamp: '2024-12-12 08:00 AM',
   },
   {
-    message: "Maintenance reminder: Engine check required for Bus #4872.",
-    timestamp: "2024-12-11 06:00 PM",
+    message: 'Maintenance reminder: Engine check required for Bus #4872.',
+    timestamp: '2024-12-11 06:00 PM',
   },
   {
-    message: "Weather alert: Heavy rainfall expected between 8 AM to 10 AM.",
-    timestamp: "2024-12-12 07:30 AM",
+    message: 'Weather alert: Heavy rainfall expected between 8 AM to 10 AM.',
+    timestamp: '2024-12-12 07:30 AM',
   },
   {
-    message: "Schedule update: Break time extended by 30 minutes.",
-    timestamp: "2024-12-12 07:00 AM",
+    message: 'Schedule update: Break time extended by 30 minutes.',
+    timestamp: '2024-12-12 07:00 AM',
   },
-]);
+])
 
 const toggleNotifications = () => {
-  isNotificationsDialogOpen.value = !isNotificationsDialogOpen.value;
-};
+  isNotificationsDialogOpen.value = !isNotificationsDialogOpen.value
+}
 
 const closeNotifications = () => {
-  isNotificationsDialogOpen.value = false;
-  hasUnreadNotifications.value = false; // Mark notifications as read
-};
+  isNotificationsDialogOpen.value = false
+  hasUnreadNotifications.value = false // Mark notifications as read
+}
 
 const toggleProfileMenu = () => {
-  isProfileMenuOpen.value = !isProfileMenuOpen.value;
-};
+  isProfileMenuOpen.value = !isProfileMenuOpen.value
+}
 
 const logout = () => {
-  alert('You have logged out!');
-};
+  alert('You have logged out!')
+}
 
 const goHome = () => {
-  alert('Going to Home');
-};
+  alert('Going to Home')
+}
 
 const goProfile = () => {
-  alert('Going to Profile');
-};
+  alert('Going to Profile')
+}
 </script>
 
 <style scoped>
 .navbar {
   background: linear-gradient(145deg, #1d2b64, #284fc3);
   color: white;
-  box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 10px, rgba(0, 0, 0, 0.1) 0px 1px 6px;
+  box-shadow:
+    rgba(0, 0, 0, 0.1) 0px 4px 10px,
+    rgba(0, 0, 0, 0.1) 0px 1px 6px;
   margin-bottom: 0;
-  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  transition:
+    background-color 0.3s ease,
+    box-shadow 0.3s ease;
 }
 
 .container {
@@ -229,7 +210,9 @@ const goProfile = () => {
   background-color: rgba(255, 255, 255, 0.2);
   padding: 0.5rem;
   border-radius: 50%;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
   box-shadow: rgba(0, 0, 0, 0.2) 0px 2px 5px;
 }
 
@@ -268,7 +251,9 @@ const goProfile = () => {
 
 .notification-btn {
   position: relative;
-  transition: background-color 0.2s ease, transform 0.2s ease;
+  transition:
+    background-color 0.2s ease,
+    transform 0.2s ease;
 }
 
 .notification-btn:hover {
@@ -318,7 +303,9 @@ const goProfile = () => {
 /* Profile avatar */
 .profile-avatar {
   border-radius: 50%;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
 }
 
 .profile-avatar:hover {
@@ -372,7 +359,7 @@ const goProfile = () => {
 /* Footer Styling */
 .footer {
   height: 70px;
-  background: linear-gradient(#284fc3,#0a1a3d);
+  background: linear-gradient(#284fc3, #0a1a3d);
   color: white;
   display: flex;
   justify-content: center;
@@ -402,7 +389,9 @@ const goProfile = () => {
 /* Hover Effects for Tabs */
 .tab-hover {
   position: relative;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
   padding: 8px 16px;
   border-radius: 10px; /* Rounded edges for a softer look */
 }

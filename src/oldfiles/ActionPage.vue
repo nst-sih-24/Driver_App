@@ -1,83 +1,43 @@
 <template>
+  <q-page-container>
+  <q-page>
   <q-card class="route-card">
     <div class="route-details">
       <div class="route-header">
-        <span class="route-time">{{ startTime }}</span>
+        <span class="route-time">09:00 AM</span>
         <span class="status-label completed">Upcoming</span>
       </div>
-      <div class="route-location" v-if="routeStops.length">
+      <div class="route-location">
         <div class="location from-to">
           <q-icon name="location_on" class="location-icon" color="green" />
-          <span>{{ routeStops.length ? routeStops[0].stop.name : '' }}</span>
+          <span>Dwarka</span>
         </div>
         <q-icon name="arrow_forward" class="arrow-icon" />
         <div class="location from-to">
-          <q-icon name="location_on" class="location-icon" color="" />
-          <span>{{ routeStops.length ? routeStops[routeStops.length - 1].stop.name : '' }}</span>
+          <q-icon name="location_on" class="location-icon" color=""/>
+          <span>Nehru Place</span>
         </div>
       </div>
-      <div class="route-info" v-if="trip">
-        {{ trip.route }} •
-        {{ trip.status === 'Completed' ? '32 stops completed' : '45 min estimated' }}
+      <div class="route-info">
+        Route 423 • 32 stops completed
       </div>
     </div>
 
-    <q-btn class="join-button" to="join" label="Join" color="white" rounded flat />
+    <q-btn
+      class="join-button"
+      to="/driver-join-page"
+      label="Join"
+      color="white"
+      rounded
+      flat
+    />
   </q-card>
+  </q-page>
+</q-page-container>
 </template>
 
 <script setup>
-import { QIcon, QBtn } from 'quasar'
-
-import { ref, onMounted, computed } from 'vue'
-
-import { supabase } from 'src/boot/supabase'
-
-const trip = ref(null)
-
-const fetchLatestTrip = async () => {
-  const { data, error } = await supabase
-    .from('trip')
-    .select('*')
-    .order('created_at', { ascending: false })
-    .limit(1)
-
-  if (error) {
-    console.error('Error fetching latest trip:', error.message)
-    return
-  }
-
-  trip.value = data[0]
-}
-
-const routeStops = ref([])
-
-const fetchRouteStops = async () => {
-  try {
-    const { data, error } = await supabase
-      .from('route_stop')
-      .select('stop_id, stop: stop_id(*)')
-      .eq('route_id', trip.value.route_id)
-
-    if (error) throw error
-
-    routeStops.value = data
-  } catch (err) {
-    console.error(err)
-  }
-}
-
-const startTime = computed(() => {
-  if (!trip.value) return ''
-
-  const date = new Date(trip.value.expected_start_time)
-  return date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })
-})
-
-onMounted(async () => {
-  await fetchLatestTrip()
-  await fetchRouteStops()
-})
+import { QIcon, QBtn } from 'quasar';
 </script>
 
 <style scoped>
@@ -97,10 +57,7 @@ onMounted(async () => {
   flex-direction: column;
   justify-content: space-between;
   width: 100%;
-  transition:
-    transform 0.3s ease,
-    box-shadow 0.3s ease,
-    background-color 0.3s ease;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
   overflow: hidden;
 }
 
@@ -123,18 +80,18 @@ onMounted(async () => {
 
 .route-time {
   font-size: 1.5rem; /* Larger font size for emphasis */
-  font-weight: 600; /* Bold for prominence */
-  color: #2563eb; /* Highlighting with a distinct blue */
+  font-weight: 600;  /* Bold for prominence */
+  color: #2563eb;   /* Highlighting with a distinct blue */
   text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1); /* Light text shadow for emphasis */
 }
 
 .status-label {
   padding: 0.5rem 1.25rem;
   border-radius: 9999px;
-  font-size: 1.1rem; /* Slightly larger for clarity */
+  font-size: 1.1rem;  /* Slightly larger for clarity */
   font-weight: 500;
-  background-color: #d1fae5; /* Soft green background */
-  color: #10b981; /* Green text to signify success/completion */
+  background-color: #d1fae5;  /* Soft green background */
+  color: #10b981;    /* Green text to signify success/completion */
   text-transform: capitalize;
   box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1); /* Light shadow inside the label */
 }
@@ -149,7 +106,7 @@ onMounted(async () => {
 .location {
   display: flex;
   align-items: center;
-  font-size: 1.125rem; /* Larger font size for easy reading */
+  font-size: 1.125rem;  /* Larger font size for easy reading */
 }
 
 .from-to {
@@ -160,13 +117,13 @@ onMounted(async () => {
 .location-icon {
   height: 1.3rem;
   width: 1.3rem;
-  color: #2563eb; /* Blue icons for location */
+  color: #2563eb;  /* Blue icons for location */
 }
 
 .arrow-icon {
   height: 1.25rem;
   width: 1.25rem;
-  color: #6b7280; /* Gray color for arrow icon */
+  color: #6b7280;  /* Gray color for arrow icon */
 }
 
 .route-info {
@@ -188,16 +145,13 @@ onMounted(async () => {
   border-radius: 9999px;
   border: none;
   cursor: pointer;
-  transition:
-    background-color 0.3s ease,
-    transform 0.2s ease,
-    box-shadow 0.2s ease;
+  transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
   z-index: 2;
 }
 
 .join-button:hover {
   background-color: #1d4ed8; /* Darker blue for hover */
-  transform: scale(1.05); /* Slight scale effect on hover */
+  transform: scale(1.05);  /* Slight scale effect on hover */
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Adding subtle shadow on hover */
 }
 
@@ -230,7 +184,7 @@ onMounted(async () => {
   }
 
   .route-time {
-    font-size: 1.2rem; /* Slightly smaller for mobile */
+    font-size: 1.2rem;  /* Slightly smaller for mobile */
   }
 
   .route-location {
@@ -245,11 +199,11 @@ onMounted(async () => {
   }
 
   .location {
-    font-size: 1rem; /* Adjust font size for better readability on mobile */
+    font-size: 1rem;  /* Adjust font size for better readability on mobile */
   }
 
   .arrow-icon {
-    display: inline-block; /* Make the arrow visible on mobile */
+    display: inline-block;  /* Make the arrow visible on mobile */
   }
 
   .status-label {
